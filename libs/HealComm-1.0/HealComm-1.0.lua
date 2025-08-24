@@ -21,7 +21,8 @@ local roster = AceLibrary("RosterLib-2.0")
 local itemBonus = AceLibrary("ItemBonusLib-1.0")
 local L = AceLibrary("AceLocale-2.2"):new("HealComm-1.0")
 local HealComm = {}
-local has_superwow = SetAutoloot and true or false
+local has_superwow  = (type(SUPERWOW_VERSION) == "string") or (type(SpellInfo) == "function")
+local has_nampower  = (type(GetNampowerVersion) == "function")
 local player_guid
 ------------------------------------------------
 -- Locales
@@ -396,22 +397,33 @@ end
 
 local function external(self, major, instance)
 	if major == "AceEvent-2.0" then
-		local AceEvent = instance
-		AceEvent:embed(self)
-		if has_superwow then
-			self:RegisterEvent("UNIT_CASTEVENT")
-		else
-			self:RegisterEvent("SPELLCAST_START")
-			self:RegisterEvent("SPELLCAST_STOP")
+	local AceEvent = instance
+	AceEvent:embed(self)
+
+	-- SuperWoW casting stream (start/stop/interrupt/channel/swing) with GUIDs
+	if has_superwow then
+		self:RegisterEvent("UNIT_CASTEVENT", "OnSW_UnitCastEvent")
+		-- Optional: SuperWoW raw combat log (bucket to avoid spam)
+		if AceEvent.RegisterBucketEvent then
+		self:RegisterBucketEvent("RAW_COMBATLOG", 0.05, "OnSW_RawCombatLog")
 		end
-		self:RegisterEvent("SPELLCAST_INTERRUPTED")
-		self:RegisterEvent("SPELLCAST_FAILED")
-		self:RegisterEvent("SPELLCAST_DELAYED")
-		self:RegisterEvent("CHAT_MSG_ADDON")
-		self:RegisterEvent("UNIT_AURA")
-		self:RegisterEvent("UNIT_HEALTH")
-		self:RegisterEvent("PLAYER_LOGIN")
-		self:TriggerEvent("HealComm_Enabled")
+	else
+		-- Vanilla fallbacks (you already had these)
+		self:RegisterEvent("SPELLCAST_START")
+		self:RegisterEvent("SPELLCAST_STOP")
+	end
+
+	-- Nampower finalized cast event (success/fail + target guid + item)
+	if has_nampower then
+		self:RegisterEvent("SPELL_CAST_EVENT", "OnNP_SpellCastEvent")
+		-- (optional) fine-grain damage events if you want to attribute ticks
+		-- self:RegisterEvent("SPELL_DAMAGE_EVENT_SELF", "OnNP_SpellDmgSelf")
+	end
+
+	self:RegisterEvent("SPELLCAST_INTERRUPTED")
+	self:RegisterEvent("SPELLCAST_FAILED")
+	self:RegisterEvent("SPELLCAST_DELAYED")
+	self:RegisterEvent("CHAT_MSG_ADDON")
 	end
 	if major == "AceHook-2.1" then
 		local AceHook = instance
@@ -1558,6 +1570,46 @@ function HealComm:UNIT_AURA()
 			self:TriggerEvent("HealComm_Hotupdate", arg1, "Renew")
 		end			
 	end
+end
+
+-- SuperWoW: start/finish/interrupts with GUIDs and spellId
+function HealComm:OnSW_UnitCastEvent(casterGuid, targetGuid, etype, spellId, castDuration)
+  -- Only care about our casts
+  if not casterGuid or (player_guid and casterGuid ~= player_guid) then return end
+  -- etype: "START","CAST","FAIL","CHANNEL","MAINHAND","OFFHAND"
+  if etype == "START" or etype == "CHANNEL" then
+    -- mark predicted heal start; you already keep self.SpellCastInfo/Heals/Hots
+    self.SpellCastInfo[spellId] = { targetGuid = targetGuid, started = GetTime(), dur = castDuration or 0 }
+    -- (optionally) broadcast your normal comm here if you do early announce
+  elseif etype == "CAST" or etype == "FAIL" then
+    -- finalize/remove prediction
+    local info = self.SpellCastInfo[spellId]
+    if info then
+      -- update your Heals/GrpHeals tables as your current logic expects
+      self.SpellCastInfo[spellId] = nil
+    end
+  end
+end
+
+-- Nampower: authoritative “cast happened” with success flag
+-- success: 1=success, 0=failed; castType: NORMAL/NON_GCD/ON_SWING/CHANNEL/TARGETING/TARGETING_NON_GCD
+function HealComm:OnNP_SpellCastEvent(success, spellId, castType, targetGuid, itemId)
+  -- Only our casts matter
+  -- (If you prefer, gate with player_guid and your last cast id)
+  local info = self.SpellCastInfo[spellId]
+  if success == 1 then
+    -- commit prediction to “actual” and notify listeners
+    -- (your addon-specific logic goes here; e.g., send CHAT_MSG_ADDON announcing exact targetGuid+amount)
+  else
+    -- clear prediction on failure
+  end
+  self.SpellCastInfo[spellId] = nil
+end
+
+-- Optional: skim SuperWoW raw log if you need extra confirmation/owner names
+function HealComm:OnSW_RawCombatLog(lines)
+  -- lines is an aggregated bucket; iterate if you want to cross-check heals/absorbs with GUID text
+  -- Keep it lightweight; this fires a lot.
 end
 
 function HealComm:getRegrTime(unit)

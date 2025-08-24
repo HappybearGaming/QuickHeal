@@ -66,6 +66,49 @@ local DQHV = { -- Default values
     SkipList = { }
 }
 
+-- === SuperWoW / Nampower integration helpers ===
+local HAS_SUPERWOW = (type(SUPERWOW_VERSION) == "string") or (type(SpellInfo) == "function")
+local HAS_NAMPOWER = (type(GetNampowerVersion) == "function")
+
+local function QH_NameAndRankForId(id)
+  if type(GetSpellNameAndRankForId) == "function" then
+    local n, r = GetSpellNameAndRankForId(id)
+    return n, r
+  end
+  if type(SpellInfo) == "function" then
+    local n, r = SpellInfo(id)  -- SuperWoW
+    return n, r
+  end
+  return nil, nil
+end
+
+local function QH_CastByIdOnUnit(id, unit)
+  local name, rank = QH_NameAndRankForId(id)
+  if not name then return false end
+  local s = rank and (name .. "(" .. rank .. ")") or name
+  if HAS_NAMPOWER and type(CastSpellByNameNoQueue) == "function" then
+    CastSpellByNameNoQueue(s, unit)   -- never-queue variant
+  else
+    CastSpellByName(s, unit)          -- SuperWoW: 2nd arg is unit
+  end
+  return true
+end
+
+local function QH_IsInRange(id, unit)
+  if type(IsSpellInRange) == "function" then
+    local r = IsSpellInRange(id, unit)
+    if r == 0 then return false end
+  end
+  return true
+end
+
+local function QH_IsUsable(id)
+  if type(IsSpellUsable) == "function" then
+    return IsSpellUsable(id) == 1
+  end
+  return true
+end
+
 local has_pepo_nam = pcall(GetCVar, "NP_QueueCastTimeSpells")
 
 local me = UnitName('player')
@@ -1043,6 +1086,8 @@ local function Initialise()
     --Register for Addon message event
     QuickHealConfig:RegisterEvent("CHAT_MSG_ADDON")
 
+    QuickHealConfig:RegisterEvent("SPELL_CAST_EVENT")
+
     QUICKHEAL_LOADED = true;
 end
 
@@ -1255,6 +1300,10 @@ function QuickHeal_OnEvent()
             TWA_handleSync(arg1, arg2, arg3, arg4)
             QH_RequestedTWARoster = false;
         end
+    elseif (event == "SPELL_CAST_EVENT") then
+        local success, spellId, castType, targetGuid, itemId = arg1, arg2, arg3, arg4, arg5
+   -- If we were healing and this was our spell, you can StopMonitor here as well.
+   -- (Optional: remember last SpellID you fired to match here.)end
     else
         QuickHeal_debug((event or "Unknown Event"), (arg1 or "nil"))
     end
@@ -2664,99 +2713,78 @@ local function ExecuteHeal(Target, SpellID)
     PlaySound = OldPlaySound;
 end
 
--- HOTs Target with SpellID, no checking on parameters
-local function ExecuteHOT(Target, SpellID)
-    local TargetWasChanged = false;
-
-    -- Setup the monitor and related events
-    --StartMonitor(Target);
-
-    -- Supress sound from target-switching
-    local OldPlaySound = PlaySound;
-    PlaySound = function()
-    end
-
-    -- If the current target is healable, take special measures
-    if UnitIsHealable('target') then
-        -- If the healing target is targettarget change current healable target to targettarget
-        if Target == 'targettarget' then
-            local old = UnitFullName('target');
-            TargetUnit('targettarget');
-            Target = 'target';
-            TargetWasChanged = true;
-            QuickHeal_debug("Healable target preventing healing, temporarily switching target to target's target", old, '-->', UnitFullName('target'));
+-- === Execute a HoT (heal-over-time) (SuperWoW/Nampower-native) ===
+function ExecuteHOT(Target, SpellID)
+    -- small local helpers
+    local function SpellLabelFromId(id)
+        if type(GetSpellNameAndRankForId) == "function" then
+            local n, r = GetSpellNameAndRankForId(id)
+            if n then return r and (n .. " (" .. r .. ")") or n end
         end
-        -- If healing target is not the current healable target clear the healable target
-        if not (Target == 'target') then
-            QuickHeal_debug("Healable target preventing healing, temporarily clearing target", UnitFullName('target'));
-            ClearTarget();
-            TargetWasChanged = true;
+        if type(SpellInfo) == "function" then
+            local n, r = SpellInfo(id) -- SuperWoW
+            if n then return r and (n .. " (" .. r .. ")") or n end
+        end
+        if type(GetSpellName) == "function" then
+            local n, r = GetSpellName(id, BOOKTYPE_SPELL)
+            if r == "" then r = nil end
+            if n then return r and (n .. " (" .. r .. ")") or n end
+        end
+        return tostring(id)
+    end
+    local function UnitFullNameSafe(unit)
+        if type(UnitFullName) == "function" then return UnitFullName(unit) end
+        return UnitName(unit)
+    end
+    local function HasSW() return (type(SUPERWOW_VERSION) == "string") or (type(SpellInfo) == "function") end
+
+    local spellLabel = SpellLabelFromId(SpellID)
+
+    -- (your original ExecuteHOT doesn’t StartMonitor; leaving that intact)
+    -- If you want visual feedback for HoTs, you can enable:
+    -- StartMonitor(Target)
+
+    -- prechecks
+    if type(IsSpellUsable) == "function" then
+        local usable, oom = IsSpellUsable(SpellID)
+        if usable ~= 1 then
+            Message(oom == 1 and "Out of mana" or "Spell not usable right now", "Error", 2)
+            -- StopMonitor("not usable") -- only if you started it above
+            return
         end
     end
-
-    -- Get spell info
-    local SpellName, SpellRank = GetSpellName(SpellID, BOOKTYPE_SPELL);
-    if SpellRank == "" then
-        SpellRank = nil
-    end
-    local SpellNameAndRank = SpellName .. (SpellRank and " (" .. SpellRank .. ")" or "");
-
-    QuickHeal_debug("  Casting: " .. SpellNameAndRank .. " on " .. UnitFullName(Target) .. " (" .. Target .. ")" .. ", ID: " .. SpellID);
-
-    -- Clear any pending spells
-    if SpellIsTargeting() then
-        SpellStopTargeting()
-    end
-
-    -- Cast the spell
-    CastSpell(SpellID, BOOKTYPE_SPELL);
-
-    -- Target == 'target'
-    -- Instant channeling --> succesful cast
-    -- Instant channeling --> instant 'out of range' fail
-    -- Instant channeling --> delayed 'line of sight' fail
-    -- No channeling --> SpellStillTargeting (unhealable NPC's, duelists etc.)
-
-    -- Target ~= 'target'
-    -- SpellCanTargetUnit == true
-    -- Channeling --> succesful cast
-    -- Channeling --> instant 'out of range' fail
-    -- Channeling --> delayed 'line of sight' fail
-    -- No channeling --> SpellStillTargeting (unknown circumstances)
-    -- SpellCanTargetUnit == false
-    -- Duels/unhealable NPC's etc.
-
-    -- The spell is awaiting target selection, write to screen if the spell can actually be cast
-    if SpellCanTargetUnit(Target) or ((Target == 'target') and HealingTarget) then
-
-        Notification(Target, SpellNameAndRank);
-
-        -- Write to center of screen
-        if UnitIsUnit(Target, 'player') then
-            Message(string.format("Casting %s on yourself", SpellNameAndRank), "Healing", 3)
-        else
-            Message(string.format("Casting %s on %s", SpellNameAndRank, UnitFullName(Target)), "Healing", 3)
+    if type(IsSpellInRange) == "function" then
+        local r = IsSpellInRange(SpellID, Target)
+        if r == 0 then
+            Message("Out of range", "Blacklist", 2)
+            -- StopMonitor("out of range") -- only if you started it above
+            return
         end
     end
 
-    -- Assign the target of the healing spell
-    SpellTargetUnit(Target);
-
-    -- just in case something went wrong here (Healing people in duels!)
-    if SpellIsTargeting() then
-        StopMonitor("Spell cannot target " .. (UnitFullName(Target) or "unit"));
-        SpellStopTargeting()
+    -- announce
+    Notification(Target, spellLabel)
+    if UnitIsUnit(Target, "player") then
+        Message(string.format("Casting %s on yourself", spellLabel), "Healing", 3)
+    else
+        Message(string.format("Casting %s on %s", spellLabel, UnitFullNameSafe(Target) or Target), "Healing", 3)
     end
 
-    -- Reacquire target if it was changed earlier
-    if TargetWasChanged then
-        local old = UnitFullName('target') or "None";
-        TargetLastTarget();
-        QuickHeal_debug("Reacquired previous target", old, '-->', UnitFullName('target'));
+    -- cast: direct-to-unit on SuperWoW, vanilla fallback otherwise
+    if type(CastSpellByName) == "function" and HasSW() then
+        CastSpellByName(spellLabel, Target)  -- no targeting mode needed
+    else
+        if type(SpellIsTargeting) == "function" and SpellIsTargeting() then SpellStopTargeting() end
+        CastSpell(SpellID, BOOKTYPE_SPELL)
+        if type(SpellIsTargeting) == "function" and SpellIsTargeting() then
+            if type(SpellCanTargetUnit) ~= "function" or SpellCanTargetUnit(Target) then
+                SpellTargetUnit(Target)
+            else
+                -- StopMonitor("Spell cannot target " .. (UnitFullNameSafe(Target) or "unit")) -- only if you started it
+                SpellStopTargeting()
+            end
+        end
     end
-
-    -- Enable sound again
-    PlaySound = OldPlaySound;
 end
 
 -- Heals the specified Target with the specified Spell
