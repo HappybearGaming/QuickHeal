@@ -1997,21 +1997,45 @@ local function CastCheckSpell()
     end
 end
 
+-- Pick a “check spell” to enter targeting mode (vanilla),
+-- but do nothing on SuperWoW/Nampower where we don’t need targeting pre-checks.
 local function CastCheckSpellHOT()
-    local _, class = UnitClass('player');
-    class = string.lower(class);
-
-    --QuickHeal_debug("********** BREAKPOINT: CastCheckSpellHOT() **********");
-    if class == "druid" then
-        CastSpell(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_REJUVENATION)[1].SpellID, BOOKTYPE_SPELL);
-    elseif class == "paladin" then
-        CastSpell(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_HOLY_SHOCK)[1].SpellID, BOOKTYPE_SPELL);
-    elseif class == "priest" then
-        CastSpell(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_RENEW)[1].SpellID, BOOKTYPE_SPELL);
-    --elseif class == "shaman" then
-    --    CastSpell(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_HEALING_WAVE)[1].SpellID, BOOKTYPE_SPELL);
+    -- On SuperWoW/Nampower we skip this completely
+    if SWNP and SWNP.hasSW then
+        return
     end
-    --QuickHeal_debug("********** BREAKPOINT: CastCheckSpellHOT() done **********");
+
+    local _, class = UnitClass("player")
+    class = string.lower(class or "")
+
+    local candidates = nil
+    if class == "druid" then
+        -- Prefer Rejuvenation; fallback to Healing Touch
+        candidates = { QUICKHEAL_SPELL_REJUVENATION, QUICKHEAL_SPELL_HEALING_TOUCH }
+    elseif class == "paladin" then
+        -- Some paladins won’t have Holy Shock; fallback to Flash of Light / Holy Light
+        candidates = { QUICKHEAL_SPELL_HOLY_SHOCK, QUICKHEAL_SPELL_FLASH_OF_LIGHT, QUICKHEAL_SPELL_HOLY_LIGHT }
+    elseif class == "priest" then
+        candidates = { QUICKHEAL_SPELL_RENEW, QUICKHEAL_SPELL_LESSER_HEAL }
+    elseif class == "shaman" then
+        -- No true HoT in vanilla; Healing Wave works as a friendly-target “check”
+        candidates = { QUICKHEAL_SPELL_HEALING_WAVE }
+    else
+        candidates = {}
+    end
+
+    -- Try each candidate until we find one you actually have
+    for i = 1, table.getn(candidates) do
+        local spellName = candidates[i]
+        local infoTbl = spellName and QuickHeal_GetSpellInfo(spellName)
+        local r1 = infoTbl and infoTbl[1]         -- rank 1 entry if present
+        local sid = r1 and r1.SpellID
+        if sid then
+            CastSpell(sid, BOOKTYPE_SPELL)
+            return
+        end
+    end
+    -- If we get here, you simply don’t have any of the check spells — just return without error.
 end
 
 local function FindWhoToHeal(Restrict, extParam)
@@ -2126,7 +2150,7 @@ local function FindWhoToHeal(Restrict, extParam)
         end
         if not RestrictSubgroup or RestrictParty or not InRaid() or (SubGroup and not QHV["FilterRaidGroup" .. SubGroup]) then
             if not IsBlacklisted(UnitFullName(unit)) then
-                if SpellCanTargetUnit(unit) then
+                if (SWNP and SWNP.hasSW) or SpellCanTargetUnit(unit) then
                     QuickHeal_debug(string.format("%s (%s) : %d/%d", UnitFullName(unit), unit, UnitHealth(unit), UnitHealthMax(unit)));
 
                     --Get who to heal for different classes
@@ -2368,7 +2392,7 @@ local function FindWhoToHOT(Restrict, extParam, noHpCheck)
         end
         if not RestrictSubgroup or RestrictParty or not InRaid() or (SubGroup and not QHV["FilterRaidGroup" .. SubGroup]) then
             if not IsBlacklisted(UnitFullName(unit)) then
-                if SpellCanTargetUnit(unit) then
+                if (SWNP and SWNP.hasSW) or SpellCanTargetUnit(unit) then
                     QuickHeal_debug(string.format("%s (%s) : %d/%d", UnitFullName(unit), unit, UnitHealth(unit), UnitHealthMax(unit)));
 
                     local _, PlayerClass = UnitClass('player');
