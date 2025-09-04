@@ -933,39 +933,49 @@ local function Message(text, kind, duration)
 end
 
 function QuickHeal_ListUnitEffects(Target)
-    if UnitExists(Target) then
-        local i = 1;
-        writeLine("|cffffff80******* Buffs on " .. (UnitFullName(Target) or "Unknown") .. " *******|r");
-        while (UnitBuff(Target, i)) do
-            local string;
-            QuickHeal_ScanningTooltip:ClearLines();
-            QuickHeal_ScanningTooltip:SetUnitBuff(Target, i);
-            local icon, apps = UnitBuff(Target, i);
-            string = "|cff0080ff" .. (QuickHeal_ScanningTooltipTextLeft1:GetText() or "") .. ":|r|cffffd200 ";
-            string = string .. (QuickHeal_ScanningTooltipTextRight1:GetText() or "") .. ", ";
-            string = string .. icon .. ", ";
-            string = string .. apps .. "|r\n";
-            string = string .. ">" .. (QuickHeal_ScanningTooltipTextLeft2:GetText() or "");
-            writeLine(string);
-            i = i + 1;
-        end
-        i = 1;
-        writeLine("|cffffff80******* DeBuffs on " .. (UnitFullName(Target) or "Unknown") .. " *******|r");
-        while (UnitDebuff(Target, i)) do
-            local string;
-            QuickHeal_ScanningTooltip:ClearLines();
-            QuickHeal_ScanningTooltip:SetUnitDebuff(Target, i);
-            local icon, apps = UnitDebuff(Target, i);
-            string = "|cff0080ff" .. (QuickHeal_ScanningTooltipTextLeft1:GetText() or "") .. ":|r|cffffd200 ";
-            string = string .. (QuickHeal_ScanningTooltipTextRight1:GetText() or "") .. ", ";
-            string = string .. icon .. ", ";
-            string = string .. apps .. "|r\n";
-            string = string .. ">" .. (QuickHeal_ScanningTooltipTextLeft2:GetText() or "");
-            writeLine(string);
-            i = i + 1;
-        end
+    if not UnitExists(Target) then return end
+
+    local i = 1
+    writeLine("|cffffff80******* Buffs on " .. (UnitFullName(Target) or "Unknown") .. " *******|r")
+    while true do
+        local icon, apps = UnitBuff(Target, i)
+        if not icon then break end
+
+        QuickHeal_ScanningTooltip:ClearLines()
+        QuickHeal_ScanningTooltip:SetUnitBuff(Target, i)
+
+        local left  = QuickHeal_ScanningTooltipTextLeft1:GetText()   or ""
+        local right = QuickHeal_ScanningTooltipTextRight1:GetText()  or ""
+        local more  = QuickHeal_ScanningTooltipTextLeft2:GetText()   or ""
+
+        local line = "|cff0080ff" .. left .. ":|r|cffffd200 "
+                   .. right .. ", " .. tostring(icon) .. ", " .. tostring(apps or "")
+                   .. "|r\n>" .. more
+        writeLine(line)
+        i = i + 1
+    end
+
+    i = 1
+    writeLine("|cffffff80******* DeBuffs on " .. (UnitFullName(Target) or "Unknown") .. " *******|r")
+    while true do
+        local icon, apps = UnitDebuff(Target, i)
+        if not icon then break end
+
+        QuickHeal_ScanningTooltip:ClearLines()
+        QuickHeal_ScanningTooltip:SetUnitDebuff(Target, i)
+
+        local left  = QuickHeal_ScanningTooltipTextLeft1:GetText()   or ""
+        local right = QuickHeal_ScanningTooltipTextRight1:GetText()  or ""
+        local more  = QuickHeal_ScanningTooltipTextLeft2:GetText()   or ""
+
+        local line = "|cff0080ff" .. left .. ":|r|cffffd200 "
+                   .. right .. ", " .. tostring(icon) .. ", " .. tostring(apps or "")
+                   .. "|r\n>" .. more
+        writeLine(line)
+        i = i + 1
     end
 end
+
 
 --[ Utilities END ]--
 
@@ -1569,39 +1579,56 @@ end
 -- returns false if no buff/debuff at index
 -- returns 1 if buff does not modify healing
 local function ModifierScan(unit, idx, tab, debuff)
-    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff;
-    local icon, apps = UnitBuffDebuff(unit, idx);
-    if icon then
-        _, _, icon = string.find(icon, "Interface\\Icons\\(.+)")
-        local stype = tab[icon .. apps] or tab[icon];
-        if stype then
-            if type(stype) == "number" then
-                return (debuff and 1 - stype or 1 + stype);
-            elseif type(stype) == "boolean" then
-                QuickHeal_ScanningTooltip:ClearLines();
-                if debuff then
-                    QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx);
-                else
-                    QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
-                end
-                local _, _, modifier = string.find(QuickHeal_ScanningTooltipTextLeft2:GetText(), " (%d+)%%")
-                modifier = tonumber(modifier);
-                if modifier and type(modifier) == "number" and ((modifier >= 0) and (modifier <= 100)) then
-                    -- Succesfully scanned and found numerical modifier
-                    return (debuff and 1 - modifier / 100 or 1 + modifier / 100);
-                else
-                    -- Failed in scanning, don't count (de)buff in
-                    return 1;
-                end
-            end
-        else
-            -- Unknown icon, don't even try to scan
-            return 1;
-        end
-    else
-        return false
+    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff
+    local icon, apps = UnitBuffDebuff(unit, idx)
+    if not icon then
+        return false -- no more auras at this index
     end
+
+    -- Try to extract the short icon name; fall back to last path segment; then to the full string.
+    local _, _, short = string.find(icon, "Interface\\Icons\\(.+)")
+    if not short then
+        -- capture the last segment even if path separators differ
+        _, _, short = string.find(icon, "([^\\/:]+)$")
+    end
+    local iconKey = short or icon or ""       -- never nil
+    local appsKey = apps or ""                -- never nil (0 stays 0, which is fine)
+
+    -- Lookups with both “icon+stacks” and just “icon”; also try with the original icon string as a fallback
+    local stype = tab[iconKey .. appsKey] or tab[iconKey] or tab[(icon or "") .. appsKey] or tab[icon]
+
+    if not stype then
+        -- Unknown icon: don't try to scan; neutral modifier
+        return 1
+    end
+
+    if type(stype) == "number" then
+        return debuff and (1 - stype) or (1 + stype)
+    elseif type(stype) == "boolean" then
+        -- Requires tooltip scanning to derive % modifier
+        QuickHeal_ScanningTooltip:ClearLines()
+        if debuff then
+            QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx)
+        else
+            QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
+        end
+
+        local left = QuickHeal_ScanningTooltipTextLeft1 and QuickHeal_ScanningTooltipTextLeft1:GetText() or ""
+        -- Find a number like "50%" anywhere in the first line
+        local _, _, pct = string.find(left or "", "(%d+)%%")
+        local modifier = pct and tonumber(pct)
+        if modifier then
+            return debuff and (1 - modifier / 100) or (1 + modifier / 100)
+        else
+            -- Tooltip didn’t give us a number; be neutral instead of crashing
+            return 1
+        end
+    end
+
+    -- Unknown stype type; be neutral
+    return 1
 end
+
 
 -- Tables with known icon names of buffs/debuffs that affect healing
 local SelfHealingBuffs = {
