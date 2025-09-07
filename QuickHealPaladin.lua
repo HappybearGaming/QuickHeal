@@ -130,8 +130,8 @@ function QuickHeal_Paladin_FindSpellToUse(Target, healType, multiplier, forceMax
     debug(string.format("Found HL up to rank %d, and found FL up to rank %d", maxRankHL, maxRankFL))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
 
     -- below changed to not differentiate between in or out if combat. Original code down below
@@ -260,8 +260,8 @@ function QuickHeal_Paladin_FindHealSpellToUseNoTarget(maxhealth, healDeficit, he
     debug(string.format("Found HL up to rank %d, and found FL up to rank %d", maxRankHL, maxRankFL))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
 
     -- below changed to not differentiate between in or out if combat. Original code down below
@@ -384,8 +384,8 @@ function QuickHeal_Paladin_FindHoTSpellToUse(Target, healType, forceMaxRank)
     debug(string.format("Found HL up to rank %d, and found FL up to rank %d and found HS up to rank %d", maxRankHL, maxRankFL, maxRankHS))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
 
     QuickHeal_debug(string.format("healneed: %f  target: %s  healType: %s  forceMaxRank: %s", healneed, Target, healType, tostring(forceMaxRank)));
@@ -489,8 +489,8 @@ function QuickHeal_Paladin_FindHoTSpellToUseNoTarget(maxhealth, healDeficit, hea
     debug(string.format("Found HL up to rank %d, and found FL up to rank %d and found HS up to rank %d", maxRankHL, maxRankFL, maxRankHS))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
 
     SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*dfMod; -- Default to Holy Shock(Rank 1)
@@ -650,6 +650,7 @@ function QuickHeal_Command_Paladin(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
