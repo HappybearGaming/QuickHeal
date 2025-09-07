@@ -145,8 +145,8 @@ function QuickHeal_Priest_FindHealSpellToUse(Target, healType, multiplier, force
     QuickHeal_debug(string.format("Found LH up to rank %d, H up top rank %d, GH up to rank %d, FH up to rank %d, and R up to max rank %d", maxRankLH, maxRankH, maxRankGH, maxRankFH, maxRankR));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -308,8 +308,8 @@ function QuickHeal_Priest_FindHealSpellToUseNoTarget(maxhealth, healDeficit, hea
     QuickHeal_debug(string.format("Found LH up to rank %d, H up top rank %d, GH up to rank %d, FH up to rank %d, and R up to max rank %d", maxRankLH, maxRankH, maxRankGH, maxRankFH, maxRankR));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -446,8 +446,8 @@ function QuickHeal_Priest_FindHoTSpellToUse(Target, healType, forceMaxRank)
     QuickHeal_debug(string.format("Found LH up to rank %d, H up top rank %d, GH up to rank %d, FH up to rank %d, and R up to max rank %d", maxRankLH, maxRankH, maxRankGH, maxRankFH, maxRankR));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -624,8 +624,8 @@ function QuickHeal_Priest_FindHoTSpellToUseNoTarget(maxhealth, healDeficit, heal
     QuickHeal_debug(string.format("Found LH up to rank %d, H up top rank %d, GH up to rank %d, FH up to rank %d, and R up to max rank %d", maxRankLH, maxRankH, maxRankGH, maxRankFH, maxRankR));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for < 1.5 sec heals
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -939,6 +939,7 @@ function QuickHeal_Command_Priest(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
