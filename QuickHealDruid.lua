@@ -164,8 +164,8 @@ function QuickHeal_Druid_FindHealSpellToUse(Target, healType, multiplier, forceM
     debug(string.format("Found HT up to rank %d, RG up to rank %d", maxRankHT, maxRankRG));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for RG
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HT
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for RG
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HT
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -358,8 +358,8 @@ function QuickHeal_Druid_FindHealSpellToUseNoTarget(maxhealth, healDeficit, heal
     debug(string.format("Found HT up to rank %d, RG up to rank %d", maxRankHT, maxRankRG));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for RG
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HT
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for RG
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HT
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -816,6 +816,7 @@ function QuickHeal_Command_Druid(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
