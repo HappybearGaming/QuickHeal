@@ -245,8 +245,8 @@ function QuickHeal_Shaman_FindHealSpellToUse(Target, healType, multiplier, force
     debug(string.format("Found HW up to rank %d, and found LHW up to rank %d", maxRankHW, maxRankLHW))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH -- rank for LHW
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HW
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0 -- rank for LHW
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HW
 
     -- Find suitable SpellID based on the defined criteria
     if InCombat then
@@ -397,8 +397,8 @@ function QuickHeal_Shaman_FindHealSpellToUseNoTarget(maxhealth, healDeficit, hea
     debug(string.format("Found HW up to rank %d, and found LHW up to rank %d", maxRankHW, maxRankLHW))
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH -- rank for LHW
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HW
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0 -- rank for LHW
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HW
 
     if forceMaxHPS then
         local k = 0.9; -- In combat means that target is losing life while casting, so compensate
@@ -581,6 +581,7 @@ function QuickHeal_Command_Shaman(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
