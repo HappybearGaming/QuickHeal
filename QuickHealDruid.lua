@@ -177,8 +177,8 @@ function QuickHeal_Druid_FindHealSpellToUse(Target, healType, multiplier, forceM
 
 
     if TargetIsHealthy or maxRankRG<1 then
-        -- Not in combat or target is healthy so use the closest available mana efficient healing
-        debug(string.format("Not in combat or target healthy or no Regrowth available, will use Healing Touch"))
+        -- target is healthy so use the closest available mana efficient healing
+        debug(string.format("target healthy or no Regrowth available, will use Healing Touch"))
         if Health < RatioFull then
             SpellID = SpellIDsHT[1]; HealSize = (44+healMod15*PF1)*gonMod; -- Default to rank 1
             if healneed > ( 100+healMod20*PF8)*gonMod*k and ManaLeft >=  55*tsMod*mgMod and maxRankHT >=  2 and downRankNH >= 2 and SpellIDsHT[2] then SpellID =  SpellIDsHT[2]; HealSize =  (100+healMod20*PF8)*gonMod end
@@ -816,6 +816,7 @@ function QuickHeal_Command_Druid(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
