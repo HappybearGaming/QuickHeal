@@ -68,7 +68,6 @@ Toggles tanklist display.
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
 `max`= will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
 `fh` = firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
-<hr>
 
 
 ## ChangeLog:
@@ -107,5 +106,6 @@ Toggles tanklist display.
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
 <hr>
+
 
 
