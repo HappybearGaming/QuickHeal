@@ -1661,35 +1661,25 @@ Unit Functions
 * New UnitPlayerOrPetInRaid("unit") - Returns 1 if the specified unit is a member of the player's raid, or is the pet of a member of the player's raid, nil otherwise (Returns 1 for "player" and "pet") 
 ]]
 function QuickHeal_UnitHasHealthInfo(unit)
-    local i;
-
-    if not unit then
-        return false
-    end -- Protection
-
-    if UnitIsUnit('player', unit) then
-        return true
-    end
-
+    if not unit then return false end
+    if UnitIsUnit('player', unit) then return true end
     if InRaid() then
-        -- In raid
         for i = 1, 40 do
             if UnitIsUnit("raidpet" .. i, unit) or UnitIsUnit("raid" .. i, unit) then
                 return true
             end
         end
     else
-        -- Not in raid
-        if UnitInParty(unit) or UnitIsUnit("pet", unit) then
-            return true
-        end ;
+        if UnitInParty(unit) or UnitIsUnit("pet", unit) then return true end
         for i = 1, 4 do
-            if (UnitIsUnit("partypet" .. i, unit)) then
-                return true
-            end
+            if (UnitIsUnit("partypet" .. i, unit)) then return true end
         end
     end
-    return false;
+    -- Ajout : permettre de soigner toute cible qui est un joueur, si elle existe et est visible
+    if UnitIsPlayer(unit) and UnitIsVisible(unit) and UnitIsFriend('player', unit) then
+        return true
+    end
+    return false
 end
 
 -- Only used by UnitIsHealable
@@ -3291,3 +3281,4 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
