@@ -1675,8 +1675,8 @@ function QuickHeal_UnitHasHealthInfo(unit)
             if (UnitIsUnit("partypet" .. i, unit)) then return true end
         end
     end
-    -- Ajout : permettre de soigner toute cible qui est un joueur, si elle existe et est visible
-    if UnitIsPlayer(unit) and UnitIsVisible(unit) and UnitIsFriend('player', unit) then
+    -- AJOUT : soignables hors groupe si amis et visibles
+    if UnitExists(unit) and UnitIsVisible(unit) and UnitIsFriend('player', unit) then
         return true
     end
     return false
@@ -3281,4 +3281,5 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
 
