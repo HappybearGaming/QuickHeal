@@ -77,7 +77,7 @@ Toggles tanklist display.
 - Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
 - Misc : Downrank fix for all classes
 
-  **Aug 21, 2025**<Br>
+ **Aug 21, 2025**<Br>
 - Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
 - Druid : Talent changes to fit 1.18
 - Shaman : Healing way now affects CH/HW and also LHW, after healing power
@@ -107,4 +107,5 @@ Toggles tanklist display.
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
 <hr>
+
 
