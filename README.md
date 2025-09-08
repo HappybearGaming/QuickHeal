@@ -76,7 +76,6 @@ Toggles tanklist display.
   **Sep 7, 2025**<Br>
 - Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
 - Misc : Downrank fix for all classes
-<hr>
 
   **Aug 21, 2025**<Br>
 - Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
@@ -85,7 +84,6 @@ Toggles tanklist display.
 - Misc : Healcom doesn't autocancel heals anymore (many complains about this mechanic)
 - Misc : Bonusscanner no longer necessary (itembonuslib does the job)
 - Misc : Mana cost fix on multiple spells
-<hr>
 
 **Jan 31, 2025**<Br>
 - Paladin : Integration of Holy Shock logic with the "/qh hot" macro
@@ -94,7 +92,6 @@ Toggles tanklist display.
 - Paladin : Holy Shock is now usable while moving
 - Druid : Improved regrowth is taken in account for Regrowth effectiveness
 - Druid : /script QuickHeal(nil,'Swiftmend') now works while moving
-<hr>
 
 **Jan 10, 2025**<Br>
 - Shaman : Removal of Purification talent bonus (no longer exist in last Turtle Wow Patch)
@@ -106,8 +103,8 @@ Toggles tanklist display.
 - Druid : Tree of Life doesn't cancel on quickheal usage anymore
 - Druid: Brought back "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text; You can now use regrowth even out of combat for Tree of life lovers
 - Druid : Brought back low ranks
-<hr>
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
 <hr>
+
