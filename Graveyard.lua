@@ -141,8 +141,8 @@ function FindSingleToHOT(playerName)
     --QuickHeal_debug("********** in the middle **********");
 
     -- Cast the checkspell
-    CastCheckSpellHOT();
-    if not SpellIsTargeting() then
+    local ok = CastCheckSpellHOT();
+    if not (ok or SpellIsTargeting()) then
         -- Reacquire target if it was cleared
         if TargetWasCleared then
             TargetLastTarget();

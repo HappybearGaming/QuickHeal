@@ -2019,7 +2019,7 @@ end
 local function CastCheckSpellHOT()
     -- On SuperWoW/Nampower we skip this completely
     if SWNP and SWNP.hasSW then
-        return
+        return true
     end
 
     local _, class = UnitClass("player")
@@ -2390,8 +2390,8 @@ local function FindWhoToHOT(Restrict, extParam, noHpCheck)
     end
 
     -- Cast the checkspell
-    CastCheckSpellHOT();
-    if not SpellIsTargeting() then
+    local ok = CastCheckSpellHOT();
+    if not (ok or SpellIsTargeting()) then
         -- Reacquire target if it was cleared
         if TargetWasCleared then
             TargetLastTarget();
@@ -2811,17 +2811,21 @@ function ExecuteHOT(Target, SpellID)
         Message(string.format("Casting %s on %s", spellLabel, UnitFullNameSafe(Target) or Target), "Healing", 3)
     end
 
-    -- cast: direct-to-unit on SuperWoW, vanilla fallback otherwise
-    if type(CastSpellByName) == "function" and HasSW() then
-        CastSpellByName(spellLabel, Target)  -- no targeting mode needed
+    -- cast: prefer SWNP direct unit-cast (GUID-safe), fall back to vanilla targeting
+    -- Always use vanilla targeting path for reliability
+    if SWNP and type(SWNP.CastByIdOnUnit) == "function" then
+        SWNP.CastByIdOnUnit(SpellID, Target)
     else
-        if type(SpellIsTargeting) == "function" and SpellIsTargeting() then SpellStopTargeting() end
+        if type(SpellIsTargeting) == "function" and SpellIsTargeting() then
+            SpellStopTargeting()
+        end
+
         CastSpell(SpellID, BOOKTYPE_SPELL)
+
         if type(SpellIsTargeting) == "function" and SpellIsTargeting() then
             if type(SpellCanTargetUnit) ~= "function" or SpellCanTargetUnit(Target) then
                 SpellTargetUnit(Target)
             else
-                -- StopMonitor("Spell cannot target " .. (UnitFullNameSafe(Target) or "unit")) -- only if you started it
                 SpellStopTargeting()
             end
         end
@@ -3282,10 +3286,33 @@ function QuickHOT(Target, SpellID, extParam, forceMaxRank, noHpCheck)
         end
     else
         Target = FindWhoToHOT(Restrict, extParam, noHpCheck);
+
+        -- Last-resort: heal self if below "full" and missing your HoT
+        if not Target then
+            local selfHealable = UnitIsHealable('player', true)
+            if selfHealable then
+                local hpPct
+                if QuickHeal_UnitHasHealthInfo('player') then
+                    local inc = HealComm and HealComm:getHeal('player') or 0
+                    hpPct = (UnitHealth('player') + inc) / UnitHealthMax('player')
+                else
+                    hpPct = UnitHealth('player') / 100
+                end
+
+                local needsHot =
+                    (PlayerClass == "druid"  and not UnitHasRejuvenation('player')) or
+                    (PlayerClass == "priest" and not UnitHasRenew('player'))        or
+                    (PlayerClass == "paladin") -- paladins HoT path = Holy Shock usage
+
+                if hpPct < QHV.RatioFull and needsHot then
+                    Target = 'player'
+                end
+            end
+        end
+
         if not Target then
             if Restrict == "mt" then
-                local tanks = false;
-                for _, _ in pairs(QHV.MTList) do tanks = true; break end
+                local tanks = false; for _, _ in pairs(QHV.MTList) do tanks = true; break end
                 if not tanks then
                     Message("No players assigned as Main Tank by Raid Leader", "Error", 2);
                 else
