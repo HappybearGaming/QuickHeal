@@ -47,7 +47,7 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
-<hr>
+
 
 ## Usage
 
@@ -105,6 +105,7 @@ Toggles tanklist display.
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
 `max`= will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
 `fh` = firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
+
 
 
 
