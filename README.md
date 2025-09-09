@@ -12,6 +12,43 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 - Download QuickHeal from this repository into your Interface folder and remove the "-turtle-wow-main" in the folder name
 - Download HealComm (better to anticipate other heals) from here https://github.com/Bestoriop/HealComm (if you use pfui/luna you don't need to do that)
 
+## ChangeLog:
+
+  **Sep 7, 2025**<Br>
+- Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
+- Misc : Downrank fix for all classes
+
+ **Aug 21, 2025**<Br>
+- Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
+- Druid : Talent changes to fit 1.18
+- Shaman : Healing way now affects CH/HW and also LHW, after healing power
+- Misc : Healcom doesn't autocancel heals anymore (many complains about this mechanic)
+- Misc : Bonusscanner no longer necessary (itembonuslib does the job)
+- Misc : Mana cost fix on multiple spells
+
+**Jan 31, 2025**<Br>
+- Paladin : Integration of Holy Shock logic with the "/qh hot" macro
+- Paladin : Holy Shock now use a rank system to limit overheal, updated from 1.17.2 values
+- Paladin : Divine Favor is taken in account for holy shock effectiveness
+- Paladin : Holy Shock is now usable while moving
+- Druid : Improved regrowth is taken in account for Regrowth effectiveness
+- Druid : /script QuickHeal(nil,'Swiftmend') now works while moving
+
+**Jan 10, 2025**<Br>
+- Shaman : Removal of Purification talent bonus (no longer exist in last Turtle Wow Patch)
+- Shaman : Healing Way buff now affects Chain Heal too
+- Priest : Holy spells updated for 1.17.2 values
+- Priest : Spiritual Healing new value (30% instead of 10%)
+- Paladin : Integration of Holy Judgement mechanic to prio HL in that situation
+- Paladin : Integration of Daybreak buff detection and multiplier
+- Druid : Tree of Life doesn't cancel on quickheal usage anymore
+- Druid: Brought back "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text; You can now use regrowth even out of combat for Tree of life lovers
+- Druid : Brought back low ranks
+
+**Nov 11, 2024**<Br>
+- Paladin : Integration of R7 Flash of Light
+<hr>
+
 ## Usage
 
 **Help**
@@ -69,43 +106,6 @@ Toggles tanklist display.
 `max`= will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
 `fh` = firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
 
-
-## ChangeLog:
-
-  **Sep 7, 2025**<Br>
-- Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
-- Misc : Downrank fix for all classes
-
- **Aug 21, 2025**<Br>
-- Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
-- Druid : Talent changes to fit 1.18
-- Shaman : Healing way now affects CH/HW and also LHW, after healing power
-- Misc : Healcom doesn't autocancel heals anymore (many complains about this mechanic)
-- Misc : Bonusscanner no longer necessary (itembonuslib does the job)
-- Misc : Mana cost fix on multiple spells
-
-**Jan 31, 2025**<Br>
-- Paladin : Integration of Holy Shock logic with the "/qh hot" macro
-- Paladin : Holy Shock now use a rank system to limit overheal, updated from 1.17.2 values
-- Paladin : Divine Favor is taken in account for holy shock effectiveness
-- Paladin : Holy Shock is now usable while moving
-- Druid : Improved regrowth is taken in account for Regrowth effectiveness
-- Druid : /script QuickHeal(nil,'Swiftmend') now works while moving
-
-**Jan 10, 2025**<Br>
-- Shaman : Removal of Purification talent bonus (no longer exist in last Turtle Wow Patch)
-- Shaman : Healing Way buff now affects Chain Heal too
-- Priest : Holy spells updated for 1.17.2 values
-- Priest : Spiritual Healing new value (30% instead of 10%)
-- Paladin : Integration of Holy Judgement mechanic to prio HL in that situation
-- Paladin : Integration of Daybreak buff detection and multiplier
-- Druid : Tree of Life doesn't cancel on quickheal usage anymore
-- Druid: Brought back "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text; You can now use regrowth even out of combat for Tree of life lovers
-- Druid : Brought back low ranks
-
-**Nov 11, 2024**<Br>
-- Paladin : Integration of R7 Flash of Light
-<hr>
 
 
 
