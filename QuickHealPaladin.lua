@@ -656,8 +656,8 @@ end
 -- extend by Drokin
 -- MELEE PALADIN HEALING functions.  Currently in beta. 
 -- The following functions give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
--- /run qhCastHolyStrike(93,3);  -- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)
--- /run qhHealWithHolyShock(85); -- Smart Holy Shock function, number is the min % healing threshold to trigger (DEFAULT is set to 85%)
+-- /run qhHStrike(93,3);  -- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)
+-- /run qhHShock(85); -- Smart Holy Shock function, number is the min % healing threshold to trigger (DEFAULT is set to 85%)
 
 -- Define CastHolyStrike as a global function
 function qhHStrike(HSminHP,HSminTargets)
