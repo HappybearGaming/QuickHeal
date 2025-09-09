@@ -9,8 +9,8 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 
 
 ## Installation
-- Download QuickHeal from this repository into your Interface folder and remove the "-main" in the folder name
-- Download HealComm (better to anticipate other heals) from here https://github.com/Bestoriop/HealComm
+- Download QuickHeal from this repository into your Interface folder and remove the "-turtle-wow-main" in the folder name
+- Download HealComm (better to anticipate other heals) from here https://github.com/Bestoriop/HealComm (if you use pfui/luna you don't need to do that)
 
 ## Usage
 
@@ -106,6 +106,7 @@ Toggles tanklist display.
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
 <hr>
+
 
 
 
