@@ -164,8 +164,8 @@ function QuickHeal_Druid_FindHealSpellToUse(Target, healType, multiplier, forceM
     debug(string.format("Found HT up to rank %d, RG up to rank %d", maxRankHT, maxRankRG));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for RG
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HT
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for RG
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HT
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -177,8 +177,8 @@ function QuickHeal_Druid_FindHealSpellToUse(Target, healType, multiplier, forceM
 
 
     if TargetIsHealthy or maxRankRG<1 then
-        -- Not in combat or target is healthy so use the closest available mana efficient healing
-        debug(string.format("Not in combat or target healthy or no Regrowth available, will use Healing Touch"))
+        -- target is healthy so use the closest available mana efficient healing
+        debug(string.format("target healthy or no Regrowth available, will use Healing Touch"))
         if Health < RatioFull then
             SpellID = SpellIDsHT[1]; HealSize = (44+healMod15*PF1)*gonMod; -- Default to rank 1
             if healneed > ( 100+healMod20*PF8)*gonMod*k and ManaLeft >=  55*tsMod*mgMod and maxRankHT >=  2 and downRankNH >= 2 and SpellIDsHT[2] then SpellID =  SpellIDsHT[2]; HealSize =  (100+healMod20*PF8)*gonMod end
@@ -358,8 +358,8 @@ function QuickHeal_Druid_FindHealSpellToUseNoTarget(maxhealth, healDeficit, heal
     debug(string.format("Found HT up to rank %d, RG up to rank %d", maxRankHT, maxRankRG));
 
     --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH  -- rank for RG
-    local downRankNH = QuickHealVariables.DownrankValueNH -- rank for HT
+    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for RG
+    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for HT
 
     -- Compensation for health lost during combat
     local k=1.0;
@@ -816,6 +816,8 @@ function QuickHeal_Command_Druid(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
+
 
 
 

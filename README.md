@@ -9,8 +9,8 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 
 
 ## Installation
-- Download QuickHeal from this repository into your Interface folder and remove the "-main" in the folder name
-- Download HealComm (better to anticipate other heals) from here https://github.com/Bestoriop/HealComm
+- Download QuickHeal from this repository into your Interface folder and remove the "-turtle-wow-main" in the folder name
+- Download HealComm (better to anticipate other heals) from here https://github.com/Bestoriop/HealComm (if you use pfui/luna you don't need to do that)
 
 ## Usage
 
@@ -68,87 +68,22 @@ Toggles tanklist display.
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
 `max`= will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
 `fh` = firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
-<hr>
-
 
 ## ChangeLog:
 
-**1.14.5**<Br>
-Disabled vestigial config UI tab 'Target Filtering'
-Fixed lua error messages that were being generated from bad OnEnter syntax in QuickHeal.xml:1620:FilterRaidGroup1-8
-Revised readme.md
-<hr>
-  
-**1.16**<Br>
-Added functions `SmartRenew()`, `SmartRenewFirehose()` and `SmartRenewThrottle()`.
-Revised readme.md
-<hr>
-  
-**1.16.1**<Br>
-Removed functions `SmartRenew()`, `SmartRenewFirehose()` and `SmartRenewThrottle()`.  These were causing target focus problems.<Br>
-Implemented `/qh hot` to replace SmartRenewThrottle().<Br>
-Regular SmartRenew & SmartRenewFirehose comin' soon-ish like.
-<hr>
+  **Sep 7, 2025**<Br>
+- Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
+- Misc : Downrank fix for all classes
 
-**1.17.0**<Br>
-Modified the verbiage for `/qh toggle` to `QuickHeal mode: Normal HPS` and `QuickHeal mode: High HPS`.<Br>
-The main tanks list is now saved to disk and will persist across sessions.</Br>
-Removed non-partition mode (`hm`) commands.<Br>
-Druids can now cast HoTs while moving.<Br>
-Big overhaul on usage syntax
-<hr>
+ **Aug 21, 2025**<Br>
+- Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
+- Druid : Talent changes to fit 1.18
+- Shaman : Healing way now affects CH/HW and also LHW, after healing power
+- Misc : Healcom doesn't autocancel heals anymore (many complains about this mechanic)
+- Misc : Bonusscanner no longer necessary (itembonuslib does the job)
+- Misc : Mana cost fix on multiple spells
 
-**1.17.1**<Br>
-Implemented TWA button inside Main Tanks UI that queries TWAssignments' roster and automatically fills Main Tank UI with up-to-date tank assignments.  Does not require TWAssignments to be installed on the local client.  Requires membership to a raid in which at least one other raidmember/leader is using TWAssignments.<Br>
-<hr>
-
-**1.17.2**<Br>
-Fixed shaman class.
-<hr>
-
-**1.17.3**<Br>
-Removed `/qh healpct`.<Br>
-Channeled heals now proactively rely entirely on HealComm to determine if another player is healing your considered target(s) during the selection process.<Br>
-Each healing class now has its own syntax command tree.<Br>
-Added [chainheal] healing type selection for Shaman class.<Br>
-<hr>
-
-**1.17.4**<Br>
-Re-partitioned class modules (i.e. QuickHealDruid.lua, QuickHealPriest.lua, QuickHealPaladin.lua, QuickHealShaman.lua) to allow for class-specific spell/item cast sequences.
-<hr>
-
-**1.17.5**<Br>
-Added 4 new keybindings: 
-- "HoT" [/qh hot] 
-- "HoT Firehose (Naxx Gargoyles)" [/qh hot fh] 
-- "HoT Subgroup" [/qh subgroup hot] 
-- "HoT MT" [/qh mt hot]
-<hr>
-
-**1.17.6**<Br>
-Druid healing improvements & Shaman chainheal fix.
-- Druid: Modified downrank sliders that control Healing Touch and Regowth maximum ranks
-- Druid: Split QuickHeal_Druid_FindHealSpellToUse into two separate function blocks: one for <L60 healing and one for =L60
-- Druid: Removed "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text;
-- Druid: Eliminated all in-combat HT ranks above HT4 if =L60. 
-- Druid: When in Normal HPS mode, HT4 will be cast over HT3 if Nature's Grace procs.
-- Shaman: Fixed intermittent ChainHeal SpellID error
-<hr>
-
-**1.18**<Br>
-- Shaman : Removal of Purification talent bonus (no longer exist in last Turtle Wow Patch)
-- Shaman : Healing Way buff now affects Chain Heal too
-- Priest : Holy spells updated for 1.17.2 values
-- Priest : Spiritual Healing new value (30% instead of 10%)
-- Paladin : Integration of Holy Judgement mechanic to prio HL in that situation
-- Paladin : Integration of Daybreak buff detection and multiplier
-- Paladin : Flash of Light R7 added
-- Druid : Tree of Life doesn't cancel on quickheal usage anymore
-- Druid: Brought back "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text; You can now use regrowth even out of combat for Tree of life lovers
-- Druid : Brought back low ranks
-<hr>
-
-  **1.19**<Br>
+**Jan 31, 2025**<Br>
 - Paladin : Integration of Holy Shock logic with the "/qh hot" macro
 - Paladin : Holy Shock now use a rank system to limit overheal, updated from 1.17.2 values
 - Paladin : Divine Favor is taken in account for holy shock effectiveness
@@ -156,14 +91,19 @@ Druid healing improvements & Shaman chainheal fix.
 - Druid : Improved regrowth is taken in account for Regrowth effectiveness
 - Druid : /script QuickHeal(nil,'Swiftmend') now works while moving
 
-  **1.2**<Br>
-- Paladin : Removal of Daybreak which is no longer a heal multiplier in last Turtle Wow patch
-- Druid : Talent changes to fit 1.18
-- Priest : No changes in last Turtle Wow patch for quickheal
-- Shaman : Healing way now affects CH/HW and also LHW, after healing power
-- Misc : Healcom doesn't autocancel heals anymore (many complains about this mechanic)
-- Misc : Bonusscanner no longer necessary (itembonuslib does the job)
+**Jan 10, 2025**<Br>
+- Shaman : Removal of Purification talent bonus (no longer exist in last Turtle Wow Patch)
+- Shaman : Healing Way buff now affects Chain Heal too
+- Priest : Holy spells updated for 1.17.2 values
+- Priest : Spiritual Healing new value (30% instead of 10%)
+- Paladin : Integration of Holy Judgement mechanic to prio HL in that situation
+- Paladin : Integration of Daybreak buff detection and multiplier
+- Druid : Tree of Life doesn't cancel on quickheal usage anymore
+- Druid: Brought back "Cfg->General->Healthy Threshold Slider/RatioHealthy" slider and explanation text; You can now use regrowth even out of combat for Tree of life lovers
+- Druid : Brought back low ranks
 
+**Nov 11, 2024**<Br>
+- Paladin : Integration of R7 Flash of Light
 
 
 
