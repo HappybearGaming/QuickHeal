@@ -2758,20 +2758,26 @@ end
 function ExecuteHOT(Target, SpellID)
     -- small local helpers
     local function SpellLabelFromId(id)
-        if type(GetSpellNameAndRankForId) == "function" then
-            local n, r = GetSpellNameAndRankForId(id)
-            if n then return r and (n .. " (" .. r .. ")") or n end
+    -- 1) If this is a spellbook slot, this will succeed and is the most reliable.
+    if type(GetSpellName) == "function" then
+        local n, r = GetSpellName(id, BOOKTYPE_SPELL)
+        if n then
+        if r == "" then r = nil end
+        return (r and (n .. " (" .. r .. ")")) or n
         end
-        if type(SpellInfo) == "function" then
-            local n, r = SpellInfo(id) -- SuperWoW
-            if n then return r and (n .. " (" .. r .. ")") or n end
-        end
-        if type(GetSpellName) == "function" then
-            local n, r = GetSpellName(id, BOOKTYPE_SPELL)
-            if r == "" then r = nil end
-            if n then return r and (n .. " (" .. r .. ")") or n end
-        end
-        return tostring(id)
+    end
+
+    -- 2) Fallbacks for true global spell IDs (SuperWoW)
+    if type(GetSpellNameAndRankForId) == "function" then
+        local n, r = GetSpellNameAndRankForId(id)
+        if n then return (r and r ~= "" and (n .. " (" .. r .. ")")) or n end
+    end
+    if type(SpellInfo) == "function" then
+        local n, r = SpellInfo(id)
+        if n then return (r and r ~= "" and (n .. " (" .. r .. ")")) or n end
+    end
+
+    return tostring(id)
     end
     local function UnitFullNameSafe(unit)
         if type(UnitFullName) == "function" then return UnitFullName(unit) end
