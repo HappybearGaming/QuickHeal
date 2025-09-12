@@ -1928,18 +1928,6 @@ local function QH_LabelForSpellID(spellID, hint)
 
   local name, rank
 
-  -- Prefer SuperWoW resolvers when present
-  if type(SpellInfo) == "function" then
-    local n, r = SpellInfo(spellID)   -- name, rank, texture, minRange, maxRange
-    name, rank = n, r
-  end
-
-  if not name and type(GetSpellNameAndRankForId) == "function" then
-    local ok, n, r = pcall(GetSpellNameAndRankForId, spellID)
-    if ok then name, rank = n, r end
-  end
-
-  -- Vanilla fallback
   if not name and type(GetSpellName) == "function" then
     local n, r = GetSpellName(spellID, BOOKTYPE_SPELL)
     name, rank = n, r
