@@ -82,78 +82,62 @@ if type(SWNP) ~= "table" then
   SWNP = nil
 end
 
--- Try multiple APIs until one returns a real name
-local function QH_NameAndRankForId(id)
-  if type(GetSpellNameAndRankForId) == "function" then
-    local n, r = GetSpellNameAndRankForId(id)
-    if n and n ~= "" then return n, (r ~= "" and r or nil) end
-  end
-  if type(SpellInfo) == "function" then
-    local n, r = SpellInfo(id)
-    if n and n ~= "" then return n, (r ~= "" and r or nil) end
-  end
-  if type(GetSpellName) == "function" then
-    local n, r = GetSpellName(id, BOOKTYPE_SPELL)
-    if n and n ~= "" then return n, (r ~= "" and r or nil) end
-  end
-  return nil, nil
+local function QH_NameAndRankForId(slot)
+  if type(slot) ~= "number" then return nil, nil end
+  if type(GetSpellName) ~= "function" then return nil, nil end
+  local n, r = GetSpellName(slot, BOOKTYPE_SPELL)
+  if not n then return nil, nil end
+  if r == "" then r = nil end
+  return n, r
 end
 
-local function QH_SpellLabelFromId(id)
-  -- Prefer SWNP’s resolver; it works for global ids and slots.
-  if type(SWNP) == "table" and type(SWNP.LabelForId) == "function" then
-    return SWNP.LabelForId(id)
-  end
-  if type(QH_NameAndRankForId) == "function" then
-    local n, r = QH_NameAndRankForId(id)
-    if n then return (r and r ~= "" and (n .. " (" .. r .. ")")) or n end
-  end
-  if type(GetSpellName) == "function" then
-    local n, r = GetSpellName(id, BOOKTYPE_SPELL)
-    if n then return (r and r ~= "" and (n .. " (" .. r .. ")")) or n end
-  end
-  return tostring(id)
+local function QH_SpellLabelFromId(slot)
+  local n, r = QH_NameAndRankForId(slot)
+  if not n then return tostring(slot) end
+  return r and (n .. " (" .. r .. ")") or n
 end
 
-local function QH_CastByIdOnUnit(id, unit)
-  -- Best path on SW/NP: cast by id on unit/GUID directly
-  if type(SWNP) == "table" and type(SWNP.CastByIdOnUnit) == "function" then
-    SWNP.CastByIdOnUnit(id, unit)
-    return true
-  end
-
-  -- Build a "Name (Rank)" even if SW id lookup failed
-  local name, rank = QH_NameAndRankForId(id)
-  if (not name) and type(GetSpellName) == "function" then
-    name, rank = GetSpellName(id, BOOKTYPE_SPELL)
-  end
-  if not name or name == "" then return false end
-  if rank == "" then rank = nil end
-  local s = rank and (name .. "(" .. rank .. ")") or name
-
-  if type(CastSpellByNameNoQueue) == "function" then
-    CastSpellByNameNoQueue(s, unit)   -- Nampower
-  else
-    CastSpellByName(s, unit)          -- SuperWoW accepts unit as 2nd arg
-  end
-  return true
-end
-
-local function QH_IsInRange(id, unit)
+local function QH_IsInRange(slot, unit)
   if type(IsSpellInRange) == "function" then
-    local r = IsSpellInRange(id, unit)
-    if r == 0 then return false end
+    local n = QH_NameAndRankForId(slot)
+    if not n then return true end -- be permissive if we can't resolve
+    local r = IsSpellInRange(n, unit)
+    return r ~= 0
   end
   return true
 end
 
-local function QH_IsUsable(id)
+local function QH_IsUsable(slot)
+  -- Prefer IsUsableSpell(name); fall back to IsSpellUsable(slot) if present on your client
+  local n = QH_NameAndRankForId(slot)
+  if n and type(IsUsableSpell) == "function" then
+    local usable = IsUsableSpell(n)
+    return usable == 1 or usable == true
+  end
   if type(IsSpellUsable) == "function" then
-    return IsSpellUsable(id) == 1
+    local usable = IsSpellUsable(slot)
+    return usable == 1 or usable == true
   end
   return true
 end
 
+-- Cast strictly by book slot, then target the unit token
+local function QH_CastByIdOnUnit(slot, unit)
+  if type(slot) ~= "number" then return false end
+  if type(CastSpell) ~= "function" then return false end
+
+  CastSpell(slot, BOOKTYPE_SPELL)
+
+  if type(SpellIsTargeting) == "function" and SpellIsTargeting() then
+    if type(SpellCanTargetUnit) ~= "function" or SpellCanTargetUnit(unit) then
+      SpellTargetUnit(unit)
+    else
+      SpellStopTargeting()
+      return false
+    end
+  end
+  return true
+end
 
 local me = UnitName('player')
 local TWA_Roster = { };
