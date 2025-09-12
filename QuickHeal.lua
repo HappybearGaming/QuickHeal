@@ -2256,7 +2256,7 @@ local function FindWhoToHOT(Restrict, extParam, noHpCheck)
         end
     end
 
-    --[[
+
     -- Target Priority
     if QHV.TargetPriority and QuickHeal_UnitHasHealthInfo('target') then
         if (UnitHealth('target') / UnitHealthMax('target')) < QHV.RatioFull then
@@ -2274,7 +2274,7 @@ local function FindWhoToHOT(Restrict, extParam, noHpCheck)
             end
         end
     end
-    ]]--
+
 
     -- Heal party/raid etc.
     local RestrictParty = false;
