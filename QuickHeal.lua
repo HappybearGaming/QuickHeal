@@ -1520,37 +1520,41 @@ end
 -- returns false if no buff/debuff at index
 -- returns 1 if buff does not modify healing
 local function ModifierScan(unit, idx, tab, debuff)
-    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff;
-    local icon, apps = UnitBuffDebuff(unit, idx);
-    if icon then
-        _, _, icon = string.find(icon, "Interface\\Icons\\(.+)")
-        local stype = tab[icon .. apps] or tab[icon];
-        if stype then
-            if type(stype) == "number" then
-                return (debuff and 1 - stype or 1 + stype);
-            elseif type(stype) == "boolean" then
-                QuickHeal_ScanningTooltip:ClearLines();
-                if debuff then
-                    QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx);
-                else
-                    QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
-                end
-                local _, _, modifier = string.find(QuickHeal_ScanningTooltipTextLeft2:GetText(), " (%d+)%%")
-                modifier = tonumber(modifier);
-                if modifier and type(modifier) == "number" and ((modifier >= 0) and (modifier <= 100)) then
-                    -- Succesfully scanned and found numerical modifier
-                    return (debuff and 1 - modifier / 100 or 1 + modifier / 100);
-                else
-                    -- Failed in scanning, don't count (de)buff in
-                    return 1;
-                end
-            end
+    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff
+    local iconPath, apps = UnitBuffDebuff(unit, idx)
+    if not iconPath then return false end
+
+    -- Extract icon token (e.g. "Spell_Holy_Renew") from full texture path.
+    local token = string.match(iconPath, "Interface\\Icons\\(.+)")
+    if not token then
+        -- Unknown/odd texture format: treat as no (de)buff that affects healing.
+        return 1
+    end
+
+    -- Only try the "<icon><stacks>" key when stacks exist; otherwise skip the concat.
+    local stype = (apps and tab[token .. apps]) or tab[token]
+    if not stype then
+        return 1 -- not a modifier we care about
+    end
+
+    if type(stype) == "number" then
+        return (debuff and 1 - stype or 1 + stype)
+    elseif type(stype) == "boolean" then
+        QuickHeal_ScanningTooltip:ClearLines()
+        if debuff then
+            QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx)
         else
-            -- Unknown icon, don't even try to scan
-            return 1;
+            QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
+        end
+        local _, _, modifier = string.find(QuickHeal_ScanningTooltipTextLeft2:GetText(), " (%d+)%%")
+        modifier = tonumber(modifier)
+        if modifier and modifier >= 0 and modifier <= 100 then
+            return (debuff and 1 - modifier / 100 or 1 + modifier / 100)
+        else
+            return 1
         end
     else
-        return false
+        return 1
     end
 end
 
@@ -2632,7 +2636,6 @@ local function ExecuteHeal(Target, SpellID)
 
     -- === SuperWoW fast path (direct cast to unit/GUID) ===
     if QH_HasSW() then
-        -- Your existing notifications
         Notification(Target, SpellNameAndRank)
         if type(UnitIsUnit) == "function" and UnitIsUnit(Target, "player") then
         Message(string.format("Casting %s on yourself", SpellNameAndRank), "Healing", 3)
@@ -2722,7 +2725,6 @@ end
 function ExecuteHOT(Target, SpellID)
   local TargetWasChanged = false
 
-  -- Keep your existing monitor/announce behavior
   if type(StartMonitor) == "function" then StartMonitor(Target) end
 
   local SpellNameAndRank = QH_LabelForSpellID(SpellID)
@@ -3186,7 +3188,6 @@ end
 
 -- HOTs the specified Target with the specified Spell
 -- If parameters are missing they will be determined automatically
-
 function QuickHOT(Target, SpellID, extParam, forceMaxRank, noHpCheck)
     if QuickHealBusy then
         if HealingTarget and MassiveOverhealInProgress then

@@ -1,4 +1,3 @@
-
 function QuickHeal_Priest_GetRatioHealthyExplanation()
     if QuickHealVariables.RatioHealthyPriest >= QuickHealVariables.RatioFull then
         return QUICKHEAL_SPELL_FLASH_HEAL .. " will always be used in combat, and "  .. QUICKHEAL_SPELL_LESSER_HEAL .. ", " .. QUICKHEAL_SPELL_HEAL .. " or " .. QUICKHEAL_SPELL_GREATER_HEAL .. " will be used when out of combat. ";
