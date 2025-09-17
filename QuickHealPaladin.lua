@@ -143,7 +143,7 @@ function QuickHeal_Paladin_FindSpellToUse(Target, healType, multiplier, forceMax
         local K = 0.8; -- k for fast spells (FL) and K for slow spells (HL)            3 = 4 | 3 < 4 | 3 > 4
     end
 
-    if not forceMaxHPS or not InCombat then
+    if not forceMaxHPS then
         if Health < RatioFull then
             if maxRankFL >=1                                                                                                                      and SpellIDsFL[1] then SpellID = SpellIDsFL[1]; HealSize = (67+healMod15)*hlMod else SpellID = SpellIDsHL[1]; HealSize = (43+healMod25*PF1)*hlMod end -- Default to rank 1 of FL or HL
             if healneed     > ( 83+healMod25*PF6)*hlMod*K and ManaLeft >= 60  and maxRankHL >=2 and (TargetIsHealthy and maxRankFL <= 1 or NoFL) and SpellIDsHL[2] then SpellID = SpellIDsHL[2]; HealSize =  (83+healMod25*PF6)*hlMod  end
@@ -273,7 +273,7 @@ function QuickHeal_Paladin_FindHealSpellToUseNoTarget(maxhealth, healDeficit, he
         local K = 0.8; -- k for fast spells (FL) and K for slow spells (HL)            3 = 4 | 3 < 4 | 3 > 4
     end
 
-    if not forceMaxHPS or not InCombat then
+    if not forceMaxHPS then
         if maxRankFL >=1                                                                                                                      and SpellIDsFL[1] then SpellID = SpellIDsFL[1]; HealSize = (67+healMod15)*hlMod else SpellID = SpellIDsHL[1]; HealSize = (43+healMod25*PF1)*hlMod end -- Default to rank 1 of FL or HL
         if healneed     > ( 83+healMod25*PF6)*hlMod*K and ManaLeft >= 60  and maxRankHL >=2 and (TargetIsHealthy and maxRankFL <= 1 or NoFL) and SpellIDsHL[2] then SpellID = SpellIDsHL[2]; HealSize =  (83+healMod25*PF6)*hlMod  end
         if healneed     > (102+healMod15)*hlMod     *k and ManaLeft >= 50  and maxRankFL >=2 and downRankFH >= 2                              and SpellIDsFL[2] then SpellID = SpellIDsFL[2]; HealSize = (102+healMod15)*hlMod      end
