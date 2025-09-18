@@ -1979,7 +1979,41 @@ local function QH_CastOnUnit(targetUnit, spellID, spellLabel)
   SpellTargetUnit(targetUnit)
 end
 
+local function QH_SpellReady()
+    local _, class = UnitClass('player');
+    local starttime, duration, enable;
+    class = string.lower(class);
+    if class == "druid" then
+        if HasRejuvRank1() then
+            -- Cast Rejuvenation if Rank 1 exists in spellbook
+            starttime, duration, enable = GetSpellCooldown(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_REJUVENATION)[1].SpellID, BOOKTYPE_SPELL);
+        else
+            -- Fallback to Healing Touch
+            starttime, duration, enable = GetSpellCooldown(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_HEALING_TOUCH)[1].SpellID, BOOKTYPE_SPELL);
+        end
+    elseif class == "paladin" then
+        starttime, duration, enable = GetSpellCooldown(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_HOLY_LIGHT)[1].SpellID, BOOKTYPE_SPELL);
+    elseif class == "priest" then
+        starttime, duration, enable = GetSpellCooldown(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_LESSER_HEAL)[1].SpellID, BOOKTYPE_SPELL);
+    elseif class == "shaman" then
+        starttime, duration, enable = GetSpellCooldown(QuickHeal_GetSpellInfo(QUICKHEAL_SPELL_HEALING_WAVE)[1].SpellID, BOOKTYPE_SPELL);
+    end
+    QuickHeal_debug("Spell cooldown: starttime=" .. tostring(starttime) .. " duration=" .. tostring(duration) .. " enable=" .. tostring(enable) .. " currenttime=" .. tostring(GetTime()));
+    if duration > 0 then
+        _G.spellReadyAt = starttime + duration + 0.5
+        return false
+    else
+        return true
+    end
+end
+
 local function CastCheckSpell()
+    if not QH_SpellReady() or GetTime() < (_G.spellReadyAt or 0) then
+        QuickHeal_debug("Spell on cooldown, not casting");
+        return
+    else
+        QuickHeal_debug("Spell ready, casting");
+    end
     local _, class = UnitClass('player');
     class = string.lower(class);
     if class == "druid" then
