@@ -2016,26 +2016,6 @@ local function CastCheckSpellHOT()
     --QuickHeal_debug("********** BREAKPOINT: CastCheckSpellHOT() done **********");
 end
 
-local function CheckCastRange_SW()
-    local _, class = UnitClass('player');
-    class = string.lower(class);
-    if class == "druid" then
-        if HasRejuvRank1() then
-            -- Cast Rejuvenation if Rank 1 exists in spellbook
-            return IsSpellInRange(QUICKHEAL_SPELL_REJUVENATION, 'target');
-        else
-            -- Fallback to Healing Touch
-            return IsSpellInRange(QUICKHEAL_SPELL_HEALING_TOUCH, 'target');
-        end
-    elseif class == "paladin" then
-        return IsSpellInRange(QUICKHEAL_SPELL_HOLY_LIGHT, 'target');
-    elseif class == "priest" then
-        return IsSpellInRange(QUICKHEAL_SPELL_LESSER_HEAL .. "(Rank 1)", 'target');
-    elseif class == "shaman" then
-        return IsSpellInRange(QUICKHEAL_SPELL_HEALING_WAVE, 'target');
-    end
-end
-
 local function FindWhoToHeal(Restrict, extParam)
     local playerIds = {};
     local petIds = {};
@@ -2118,32 +2098,27 @@ local function FindWhoToHeal(Restrict, extParam)
     local healingTargetMissingHealth = 0;
     local unit;
 
-    swInRange = nil
-    if QH_HasSW() then
-        swInRange = CheckCastRange_SW()  -- returns 0/1 or nil
-    else
-        -- Clear any healable target
-        local OldPlaySound = PlaySound;
-        PlaySound = function()
-        end
-        local TargetWasCleared = false;
-        if UnitIsHealable('target') then
-            TargetWasCleared = true;
-            ClearTarget();
-        end
-        -- Cast the checkspell
-        CastCheckSpell();
-        if not SpellIsTargeting() then
-            -- Reacquire target if it was cleared
-            if TargetWasCleared then
-                TargetLastTarget();
-            end
-            -- Reinsert the PlaySound
-            PlaySound = OldPlaySound;
-            return false;
-        end
+    -- Clear any healable target
+    local OldPlaySound = PlaySound;
+    PlaySound = function()
+    end
+    local TargetWasCleared = false;
+    if UnitIsHealable('target') then
+        TargetWasCleared = true;
+        ClearTarget();
     end
 
+    -- Cast the checkspell
+    CastCheckSpell();
+    if not SpellIsTargeting() then
+        -- Reacquire target if it was cleared
+        if TargetWasCleared then
+            TargetLastTarget();
+        end
+        -- Reinsert the PlaySound
+        PlaySound = OldPlaySound;
+        return false;
+    end
 
     -- Examine Healable Players
     for unit, i in playerIds do
@@ -2153,7 +2128,7 @@ local function FindWhoToHeal(Restrict, extParam)
         end
         if not RestrictSubgroup or RestrictParty or not InRaid() or (SubGroup and not QHV["FilterRaidGroup" .. SubGroup]) then
             if not IsBlacklisted(UnitFullName(unit)) then
-                if swInRange or SpellCanTargetUnit(unit) then
+                if SpellCanTargetUnit(unit) then
                     QuickHeal_debug(string.format("%s (%s) : %d/%d", UnitFullName(unit), unit, UnitHealth(unit), UnitHealthMax(unit)));
 
                     --Get who to heal for different classes
@@ -2217,7 +2192,7 @@ local function FindWhoToHeal(Restrict, extParam)
             end
             if not RestrictSubgroup or RestrictParty or not InRaid() or (SubGroup and not QHV["FilterRaidGroup" .. SubGroup]) then
                 if not IsBlacklisted(UnitFullName(unit)) then
-                    if swInRange or SpellCanTargetUnit(unit) then
+                    if SpellCanTargetUnit(unit) then
                         QuickHeal_debug(string.format("%s (%s) : %d/%d", UnitFullName(unit), unit, UnitHealth(unit), UnitHealthMax(unit)));
                         local Health = UnitHealth(unit) / UnitHealthMax(unit);
                         if Health < QHV.RatioFull then
@@ -2239,15 +2214,12 @@ local function FindWhoToHeal(Restrict, extParam)
         end
     end
 
-    if not QH_HasSW() then
-        -- Reacquire target if it was cleared earlier, and stop CheckSpel
-        SpellStopTargeting();
-        if TargetWasCleared then
-            TargetLastTarget();
-        end
-        PlaySound = OldPlaySound;
+    -- Reacquire target if it was cleared earlier, and stop CheckSpell
+    SpellStopTargeting();
+    if TargetWasCleared then
+        TargetLastTarget();
     end
-
+    PlaySound = OldPlaySound;
 
     -- Examine External Target
     if AllPlayersAreFull and (AllPetsAreFull or QHV.PetPriority == 0) then
