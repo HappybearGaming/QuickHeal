@@ -72,7 +72,7 @@ Toggles tanklist display.
 
 -- The following functions give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
 
-`/run qhHStrike(93,3)` -- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)
+`/run qhHStrike(93,3)` -- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)<Br>
 `/run qhHShock(85)` -- Holy shock function which is independant from general threshold. Number is the min % healing threshold to trigger (DEFAULT is set to 85%). If you prefer using the general threshold, always use /`qh hot`
 
 ## ChangeLog:
@@ -110,6 +110,7 @@ Toggles tanklist display.
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
