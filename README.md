@@ -61,23 +61,19 @@ Toggles tanklist display.
 
 `[type]`: constrains healing spell to:<Br>
 `heal`: Forces the use of your class' channeled heal spells.<Br>
-`hot`: Forces the use of your class' HoT spell over a channeled spell.  Only works for Priests & Druids & Paladins for holy shock .<Br>
+`hot`: Forces the use of your class' HoT spell over a channeled spell.  Only works for Priests & Druids & Paladins (for holy shock) .<Br>
 `chainheal`: Forces the use of the Chain Heal spell.  Only works for Shamans.<Br>
 
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
 `max`= will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
 `fh` = firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
 
-`QuickHeal Paladin Melee Healing`
+**QuickHeal Paladin Melee Healing**
+
 -- The following functions give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
 
-/run qhHStrike(93,3)
-
--- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)
-
-/run qhHShock(85)
-
--- Smart Holy Shock function, number is the min % healing threshold to trigger (DEFAULT is set to 85%)
+`/run qhHStrike(93,3)` -- Smart Holy Stike function, 1st number is the min %healing threshold to trigger, the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets)
+`/run qhHShock(85)` -- Holy shock function which is independant from general threshold. Number is the min % healing threshold to trigger (DEFAULT is set to 85%). If you prefer using the general threshold, always use /`qh hot`
 
 ## ChangeLog:
 
@@ -114,6 +110,7 @@ Toggles tanklist display.
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
