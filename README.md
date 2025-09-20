@@ -16,7 +16,9 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 **Basic usage**
 
 `/qh help` displays help inside the console
+
 `/qh cfg` invokes the configuration interface
+
 To invoke quickheal, make a macro with the `/qh` slash command
 
 **Downrank**
@@ -110,6 +112,7 @@ Toggles tanklist display.
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
