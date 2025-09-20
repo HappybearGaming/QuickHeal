@@ -1528,11 +1528,20 @@ local function ModifierScan(unit, idx, tab, debuff)
     local token = string.match(iconPath, "Interface\\Icons\\(.+)")
     if not token then
         -- Unknown/odd texture format: treat as no (de)buff that affects healing.
+        -- 👇 tu peux activer cette ligne si tu veux voir lesquels posent problème
+        -- DEFAULT_CHAT_FRAME:AddMessage("QuickHeal: icône inconnue " .. tostring(iconPath))
         return 1
     end
 
     -- Only try the "<icon><stacks>" key when stacks exist; otherwise skip the concat.
-    local stype = (apps and tab[token .. apps]) or tab[token]
+    local stype
+    if apps and apps > 0 then
+        stype = tab[token .. apps]
+    end
+    if not stype then
+        stype = tab[token]
+    end
+
     if not stype then
         return 1 -- not a modifier we care about
     end
@@ -1546,7 +1555,8 @@ local function ModifierScan(unit, idx, tab, debuff)
         else
             QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
         end
-        local _, _, modifier = string.find(QuickHeal_ScanningTooltipTextLeft2:GetText(), " (%d+)%%")
+        local text = QuickHeal_ScanningTooltipTextLeft2:GetText()
+        local _, _, modifier = text and string.find(text, " (%d+)%%")
         modifier = tonumber(modifier)
         if modifier and modifier >= 0 and modifier <= 100 then
             return (debuff and 1 - modifier / 100 or 1 + modifier / 100)
@@ -1557,6 +1567,7 @@ local function ModifierScan(unit, idx, tab, debuff)
         return 1
     end
 end
+
 
 -- Tables with known icon names of buffs/debuffs that affect healing
 local SelfHealingBuffs = {
@@ -3334,5 +3345,6 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
 
 
