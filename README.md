@@ -10,6 +10,7 @@ QuickHeal gives healers fast access to all of their direct healing spells for he
 
 ## Installation
 - Download QuickHeal from this repository into your Interface folder and remove the "-turtle-wow-main" in the folder name
+- Warrning : Nampower is randomly breaking Quickheal. Don't use it, you will be fast enough.
 
 ## Usage
 
@@ -109,6 +110,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
