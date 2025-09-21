@@ -1519,38 +1519,55 @@ end
 -- Scan a particular buff/debuff index for buffs contained in tab and returns factor applied to healing
 -- returns false if no buff/debuff at index
 -- returns 1 if buff does not modify healing
+-- Scan a particular buff/debuff index for buffs contained in tab and returns factor applied to healing
+-- returns false if no buff/debuff at index
+-- returns 1 if buff does not modify healing
 local function ModifierScan(unit, idx, tab, debuff)
-    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff;
-    local icon, apps = UnitBuffDebuff(unit, idx);
-    if icon then
-        _, _, icon = string.find(icon, "Interface\\Icons\\(.+)")
-        local stype = tab[icon .. apps] or tab[icon];
-        if stype then
-            if type(stype) == "number" then
-                return (debuff and 1 - stype or 1 + stype);
-            elseif type(stype) == "boolean" then
-                QuickHeal_ScanningTooltip:ClearLines();
-                if debuff then
-                    QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx);
-                else
-                    QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
-                end
-                local _, _, modifier = string.find(QuickHeal_ScanningTooltipTextLeft2:GetText(), " (%d+)%%")
-                modifier = tonumber(modifier);
-                if modifier and type(modifier) == "number" and ((modifier >= 0) and (modifier <= 100)) then
-                    -- Succesfully scanned and found numerical modifier
-                    return (debuff and 1 - modifier / 100 or 1 + modifier / 100);
-                else
-                    -- Failed in scanning, don't count (de)buff in
-                    return 1;
-                end
-            end
+    local UnitBuffDebuff = debuff and UnitDebuff or UnitBuff
+    local iconPath, apps = UnitBuffDebuff(unit, idx)
+    if not iconPath then return false end
+
+    -- Extract icon token (e.g. "Spell_Holy_Renew") from full texture path.
+    local _, _, token = string.find(iconPath, "Interface\\Icons\\(.+)")
+    if not token then
+        -- Unknown/odd texture format: treat as no (de)buff that affects healing.
+        -- 👇 tu peux activer cette ligne si tu veux voir lesquels posent problème
+        -- DEFAULT_CHAT_FRAME:AddMessage("QuickHeal: icône inconnue " .. tostring(iconPath))
+        return 1
+    end
+
+    -- Only try the "<icon><stacks>" key when stacks exist; otherwise skip the concat.
+    local stype
+    if apps and apps > 0 then
+        stype = tab[token .. apps]
+    end
+    if not stype then
+        stype = tab[token]
+    end
+
+    if not stype then
+        return 1 -- not a modifier we care about
+    end
+
+    if type(stype) == "number" then
+        return (debuff and 1 - stype or 1 + stype)
+    elseif type(stype) == "boolean" then
+        QuickHeal_ScanningTooltip:ClearLines()
+        if debuff then
+            QuickHeal_ScanningTooltip:SetUnitDebuff(unit, idx)
         else
-            -- Unknown icon, don't even try to scan
-            return 1;
+            QuickHeal_ScanningTooltip:SetUnitBuff(unit, idx)
+        end
+        local text = QuickHeal_ScanningTooltipTextLeft2:GetText()
+        local _, _, modifier = text and string.find(text, " (%d+)%%")
+        modifier = tonumber(modifier)
+        if modifier and modifier >= 0 and modifier <= 100 then
+            return (debuff and 1 - modifier / 100 or 1 + modifier / 100)
+        else
+            return 1
         end
     else
-        return false
+        return 1
     end
 end
 
@@ -3281,3 +3298,4 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
