@@ -1525,7 +1525,7 @@ local function ModifierScan(unit, idx, tab, debuff)
     if not iconPath then return false end
 
     -- Extract icon token (e.g. "Spell_Holy_Renew") from full texture path.
-    local token = string.match(iconPath, "Interface\\Icons\\(.+)")
+    local _, _, token = string.find(iconPath, "Interface\\Icons\\(.+)")
     if not token then
         -- Unknown/odd texture format: treat as no (de)buff that affects healing.
         -- 👇 tu peux activer cette ligne si tu veux voir lesquels posent problème
@@ -3345,6 +3345,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
 
 
 
