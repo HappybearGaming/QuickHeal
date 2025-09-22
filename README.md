@@ -5,7 +5,9 @@ If you want to help, here is my paypal : [![paypal](https://www.paypalobjects.co
 
 QuickHeal for Turtle WoW (updated for patch 1.18)
 
-QuickHeal gives healers fast access to all of their direct healing spells for healing party/raid members and themselves. It lets you heal the people who need it, without having to target them manually, or even having to deselect the enemy you're fighting. It gives maximum mana efficiency, and will automatically use a lower rank of healing if the target doesn't need your biggest heal, or if your mana is running low. This also works when not in a party or a raid, and this will save you mana and precious time by automatically selecting the healing spell. There are several different key bindings for constraining the scope of players that will be considered for heals.
+QuickHeal gives healers fast access to all of their direct healing spells for healing party/raid members and themselves. It lets you heal the people who need it, without having to target them manually, or even having to deselect the enemy you're fighting. It gives maximum mana efficiency, and will automatically use a lower rank of healing if the target doesn't need your biggest heal, or if your mana is running low. <Br> 
+This also works when not in a party or a raid, and this will save you mana and precious time by automatically selecting the healing spell. <Br> 
+There are several different key bindings for constraining the scope of players that will be considered for heals.
 
 
 ## Installation
@@ -109,6 +111,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
