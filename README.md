@@ -75,8 +75,12 @@ The following functions give paladins that choose to heal in melee additional to
 
 ## ChangeLog:
 
+
+**Sep 21, 2025**<Br>
+- Misc : Nampower integration
+
 **Sep 20, 2025**<Br>
-- Paladin : Adding melee paladins macros
+- Paladin : Adding melee paladins macros from other fork
 
 **Sep 7, 2025**<Br>
 - Paladin : "/qh hot" works again (was always using the damage instead of healing since 1.18 TW patch)
@@ -111,6 +115,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
