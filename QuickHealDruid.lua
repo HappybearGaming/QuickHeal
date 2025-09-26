@@ -139,7 +139,7 @@ function QuickHeal_Druid_FindHealSpellToUse(Target, healType, multiplier, forceM
 
     -- Detect Wushoolay's Charm of Nature (Trinket from Zul'Gurub, Madness event)
     if QuickHeal_DetectBuff('player',"Spell_Nature_Regenerate") then
-        debug("BUFF: Nature's Swiftness (out of combat healing forced)");
+        debug("BUFF: Wushoolay (healing touch forced)");
         ForceHTinCombat = true;
     end
 
@@ -816,6 +816,7 @@ function QuickHeal_Command_Druid(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
