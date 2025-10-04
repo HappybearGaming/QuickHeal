@@ -375,21 +375,21 @@ function QuickHeal_Paladin_FindHoTSpellToUse(Target, healType, forceMaxRank)
         healneed, Target, healType, tostring(forceMaxRank)
     ));
 
-    if healType == "hot" then
-        if not forceMaxRank then
-            -- Mode normal : choisir rang selon besoin de soin
-            SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*hlMod*dfMod; -- Rank 1
-            if healneed >(360+healMod15)*hlMod*dfMod and ManaLeft >= 335 and maxRankHS >=2 then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*hlMod*dfMod end
-            if healneed >(500+healMod15)*hlMod*dfMod and ManaLeft >= 410 and maxRankHS >=3 then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*hlMod*dfMod end
-            if healneed >(655+healMod15)*hlMod*dfMod and ManaLeft >= 485 and maxRankHS >=4 then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*hlMod*dfMod end
-        else
-            -- Mode max rank : toujours le rang le plus élevé
-            if maxRankHS >= 1 then
-                SpellID = SpellIDsHS[maxRankHS];
-                HealSize = (655+healMod15)*hlMod*dfMod; -- valeur indicative
-            end
+
+    if not forceMaxRank then
+        -- Mode normal : choisir rang selon besoin de soin
+        SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*hlMod*dfMod; -- Rank 1
+        if healneed >(360+healMod15)*hlMod*dfMod and ManaLeft >= 335 and maxRankHS >=2 then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*hlMod*dfMod end
+        if healneed >(500+healMod15)*hlMod*dfMod and ManaLeft >= 410 and maxRankHS >=3 then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*hlMod*dfMod end
+        if healneed >(655+healMod15)*hlMod*dfMod and ManaLeft >= 485 and maxRankHS >=4 then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*hlMod*dfMod end
+    else
+        -- Mode max rank : toujours le rang le plus élevé
+        if maxRankHS >= 1 then
+            SpellID = SpellIDsHS[maxRankHS];
+            HealSize = (655+healMod15)*hlMod*dfMod; -- valeur indicative
         end
     end
+
 
 return SpellID, HealSize * HDB;
 
@@ -756,6 +756,7 @@ function GetLowestHealthUnit()
 
     return lowestUnit, lowestHealthPct; -- Return both unit and health percentage
 end
+
 
 
 
