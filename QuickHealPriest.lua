@@ -14,7 +14,7 @@ function QuickHeal_Priest_FindHealSpellToUse(Target, healType, multiplier, force
     local SpellID = nil;
     local HealSize = 0;
     local Overheal = false;
-    local ForceGHinCombat = false;
+    local ForceGH = false;
 
     -- Return immediately if no player needs healing
     if not Target then
@@ -113,7 +113,7 @@ function QuickHeal_Priest_FindHealSpellToUse(Target, healType, multiplier, force
     -- Detect Hazza'rah's Charm of Healing (Trinket from Zul'Gurub, Madness event)
     if QuickHeal_DetectBuff('player',"Spell_Holy_HealingAura") then
         QuickHeal_debug("BUFF: Hazza'rah buff (Greater Heal forced)");
-        ForceGHinCombat = true;
+        ForceGH = true;
     end
 
     -- Detect Inner Focus or Spirit of Redemption (hack ManaLeft and healneed)
@@ -172,7 +172,7 @@ function QuickHeal_Priest_FindHealSpellToUse(Target, healType, multiplier, force
     if healType == "channel" then
         jgpprint("CHANNEL HEAL: " .. healType)
         -- Find suitable SpellID based on the defined criteria
-        if ForceGHinCombat and ManaLeft >= 351*ihMod and maxRankGH >=1 and downRankNH >= 8  and SpellIDsGH[1] then
+        if ForceGH and ManaLeft >= 351*ihMod and maxRankGH >=1 and downRankNH >= 8  and SpellIDsGH[1] then
             -- Hazza'rah buff is active so use only GH if that's possible
             QuickHeal_debug(string.format("Forcing GH with Hazza'rah buff"))
             if Health < QuickHealVariables.RatioFull then
@@ -228,7 +228,7 @@ function QuickHeal_Priest_FindHealSpellToUseNoTarget(maxhealth, healDeficit, hea
     local SpellID = nil;
     local HealSize = 0;
     local Overheal = false;
-    local ForceGHinCombat = false;
+    local ForceGH = false;
 
     if multiplier == nil then
         jgpprint(">>> multiplier is NIL <<<")
@@ -300,7 +300,7 @@ function QuickHeal_Priest_FindHealSpellToUseNoTarget(maxhealth, healDeficit, hea
     -- Detect Hazza'rah's Charm of Healing (Trinket from Zul'Gurub, Madness event)
     if QuickHeal_DetectBuff('player',"Spell_Holy_HealingAura") then
         QuickHeal_debug("BUFF: Hazza'rah buff (Greater Heal forced)");
-        ForceGHinCombat = true;
+        ForceGH = true;
     end
 
     -- Detect Inner Focus or Spirit of Redemption (hack ManaLeft and healneed)
@@ -342,7 +342,7 @@ function QuickHeal_Priest_FindHealSpellToUseNoTarget(maxhealth, healDeficit, hea
         K=0.8;
     end
 
-    if ForceGHinCombat and ManaLeft >= 351*ihMod and maxRankGH >=1 and downRankNH >= 8  and SpellIDsGH[1] then
+    if ForceGH and ManaLeft >= 351*ihMod and maxRankGH >=1 and downRankNH >= 8  and SpellIDsGH[1] then
             -- Hazza'rah buff is active so use only GH if that's possible
         QuickHeal_debug(string.format("Forcing GH with Hazza'rah buff"))
         if Health < QuickHealVariables.RatioFull then
@@ -972,5 +972,6 @@ function QuickHeal_Command_Priest(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
