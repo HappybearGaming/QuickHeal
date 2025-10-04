@@ -306,11 +306,6 @@ function QuickHeal_Paladin_FindHoTSpellToUse(Target, healType, forceMaxRank)
     local SpellID = nil;
     local HealSize = 0;
 
-    -- +Healing-PenaltyFactor = (1-((20-LevelLearnt)*0.0375)) for all spells learnt before level 20
-    local PF1 = 0.2875;
-    local PF6 = 0.475;
-    local PF14 = 0.775;
-
     -- Local aliases to access main module functionality and settings
     local RatioFull = QuickHealVariables["RatioFull"];
     local RatioHealthy = QuickHeal_GetRatioHealthy();
@@ -346,10 +341,7 @@ function QuickHeal_Paladin_FindHoTSpellToUse(Target, healType, forceMaxRank)
 
     -- Calculate healing bonus
     local healMod15 = (1.5/3.5) * Bonus;
-    local healMod25 = (2.5/3.5) * Bonus;
-    debug("Final Healing Bonus (1.5,2.5)", healMod15,healMod25);
-
-    local InCombat = UnitAffectingCombat('player') or UnitAffectingCombat(Target);
+    debug("Final Healing Bonus (1.5)", healMod15);
 
     -- Healing Light Talent (increases healing by 4% per rank)
     local _,_,_,_,talentRank,_ = GetTalentInfo(1,6);
@@ -370,52 +362,43 @@ function QuickHeal_Paladin_FindHoTSpellToUse(Target, healType, forceMaxRank)
 
     -- Get total healing modifier (factor) caused by healing target debuffs
     local HDB = QuickHeal_GetHealModifier(Target);
-    debug("Target debuff healing modifier",HDB);
-    healneed = healneed/HDB;
+    debug("Target debuff healing modifier", HDB);
+    healneed = healneed / HDB;
 
-    -- Get a list of ranks available of 'Flash of Light' and 'Holy Light' and 'Holy Shock'
-    local SpellIDsHL = GetSpellIDs(QUICKHEAL_SPELL_HOLY_LIGHT);
-    local SpellIDsFL = GetSpellIDs(QUICKHEAL_SPELL_FLASH_OF_LIGHT);
+    -- Get a list of ranks available for Holy Shock only
     local SpellIDsHS = GetSpellIDs(QUICKHEAL_SPELL_HOLY_SHOCK);
-    local maxRankHL = table.getn(SpellIDsHL);
-    local maxRankFL = table.getn(SpellIDsFL);
     local maxRankHS = table.getn(SpellIDsHS);
-    local NoFL = maxRankFL < 1;
-    debug(string.format("Found HL up to rank %d, and found FL up to rank %d and found HS up to rank %d", maxRankHL, maxRankFL, maxRankHS))
+    debug(string.format("Found HS up to rank %d", maxRankHS));
 
-    --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
-
-
-    QuickHeal_debug(string.format("healneed: %f  target: %s  healType: %s  forceMaxRank: %s", healneed, Target, healType, tostring(forceMaxRank)));
+    QuickHeal_debug(string.format(
+        "healneed: %f  target: %s  healType: %s  forceMaxRank: %s",
+        healneed, Target, healType, tostring(forceMaxRank)
+    ));
 
     if healType == "hot" then
-        if not forceMaxHPS then
-            SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*dfMod; -- Default to Holy Shock(Rank 1)
-            if healneed >(360+healMod15)*dfMod and ManaLeft >= 335 and maxRankHS >=2 and SpellIDsHS[2] then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*dfMod end
-            if healneed >(500+healMod15)*dfMod and ManaLeft >= 410 and maxRankHS >=3 and SpellIDsHS[3] then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*dfMod end
-	    if healneed >(655+healMod15)*dfMod and ManaLeft >= 485 and maxRankHS >=4 and SpellIDsHS[4] then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*dfMod end
+        if not forceMaxRank then
+            -- Mode normal : choisir rang selon besoin de soin
+            SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*hlMod*dfMod; -- Rank 1
+            if healneed >(360+healMod15)*hlMod*dfMod and ManaLeft >= 335 and maxRankHS >=2 then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*hlMod*dfMod end
+            if healneed >(500+healMod15)*hlMod*dfMod and ManaLeft >= 410 and maxRankHS >=3 then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*hlMod*dfMod end
+            if healneed >(655+healMod15)*hlMod*dfMod and ManaLeft >= 485 and maxRankHS >=4 then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*hlMod*dfMod end
         else
-            SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*dfMod
-            if maxRankHS >=2 and SpellIDsHS[2] then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*dfMod end
-            if maxRankHS >=3 and SpellIDsHS[3] then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*dfMod end
-	    if maxRankHS >=4 and SpellIDsHS[4] then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*dfMod end
+            -- Mode max rank : toujours le rang le plus élevé
+            if maxRankHS >= 1 then
+                SpellID = SpellIDsHS[maxRankHS];
+                HealSize = (655+healMod15)*hlMod*dfMod; -- valeur indicative
+            end
         end
     end
 
-    return SpellID,HealSize*HDB;
+return SpellID, HealSize * HDB;
+
 end
 
 function QuickHeal_Paladin_FindHoTSpellToUseNoTarget(maxhealth, healDeficit, healType, multiplier, forceMaxHPS, forceMaxRank, hdb, incombat)
     local SpellID = nil;
     local HealSize = 0;
 
-    -- +Healing-PenaltyFactor = (1-((20-LevelLearnt)*0.0375)) for all spells learnt before level 20
-    local PF1 = 0.2875;
-    local PF6 = 0.475;
-    local PF14 = 0.775;
-
     -- Local aliases to access main module functionality and settings
     local RatioFull = QuickHealVariables["RatioFull"];
     local RatioHealthy = QuickHeal_GetRatioHealthy();
@@ -451,10 +434,7 @@ function QuickHeal_Paladin_FindHoTSpellToUseNoTarget(maxhealth, healDeficit, hea
 
     -- Calculate healing bonus
     local healMod15 = (1.5/3.5) * Bonus;
-    local healMod25 = (2.5/3.5) * Bonus;
-    debug("Final Healing Bonus (1.5,2.5)", healMod15,healMod25);
-
-    local InCombat = UnitAffectingCombat('player') or UnitAffectingCombat(Target);
+    debug("Final Healing Bonus (1.5)", healMod15);
 
     -- Healing Light Talent (increases healing by 4% per rank)
     local _,_,_,_,talentRank,_ = GetTalentInfo(1,6);
@@ -478,27 +458,27 @@ function QuickHeal_Paladin_FindHoTSpellToUseNoTarget(maxhealth, healDeficit, hea
     debug("Target debuff healing modifier",HDB);
     healneed = healneed/HDB;
 
-    -- Get a list of ranks available of 'Flash of Light' and 'Holy Light' and 'Holy Shock'
-    local SpellIDsHL = GetSpellIDs(QUICKHEAL_SPELL_HOLY_LIGHT);
-    local SpellIDsFL = GetSpellIDs(QUICKHEAL_SPELL_FLASH_OF_LIGHT);
+    -- Get a list of ranks available of 'Holy Shock'
     local SpellIDsHS = GetSpellIDs(QUICKHEAL_SPELL_HOLY_SHOCK);
-    local maxRankHL = table.getn(SpellIDsHL);
-    local maxRankFL = table.getn(SpellIDsFL);
     local maxRankHS = table.getn(SpellIDsHS);
-    local NoFL = maxRankFL < 1;
-    debug(string.format("Found HL up to rank %d, and found FL up to rank %d and found HS up to rank %d", maxRankHL, maxRankFL, maxRankHS))
+    debug(string.format("Found HS up to rank %d", maxRankHS));
 
-    --Get max HealRanks that are allowed to be used
-    local downRankFH = QuickHealVariables.DownrankValueFH or 0  -- rank for 1.5 sec heals
-    local downRankNH = QuickHealVariables.DownrankValueNH or 0 -- rank for < 1.5 sec heals
+    -- Si on force le rang maximum (ex: /qh hot max)
+    if forceMaxRank then
+        if maxRankHS >= 1 then
+            SpellID = SpellIDsHS[maxRankHS];
+            HealSize = (655+healMod15)*hlMod*dfMod; -- estimation du rang 4
+        end
+        return SpellID, HealSize * hdb;
+    end
 
+    -- Mode normal : choisir rang selon besoin de soin
+    SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*hlMod*dfMod; -- Rank 1
+    if healneed >(360+healMod15)*hlMod*dfMod and ManaLeft >= 335 and maxRankHS >=2 and SpellIDsHS[2] then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*hlMod*dfMod end
+    if healneed >(500+healMod15)*hlMod*dfMod and ManaLeft >= 410 and maxRankHS >=3 and SpellIDsHS[3] then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*hlMod*dfMod end
+    if healneed >(655+healMod15)*hlMod*dfMod and ManaLeft >= 485 and maxRankHS >=4 and SpellIDsHS[4] then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*hlMod*dfMod end
 
-    SpellID = SpellIDsHS[1]; HealSize = (315+healMod15)*dfMod; -- Default to Holy Shock(Rank 1)
-    if healneed >(360+healMod15)*dfMod and ManaLeft >= 335 and maxRankHS >=2 and SpellIDsHS[2] then SpellID = SpellIDsHS[2]; HealSize = (360+healMod15)*dfMod end
-    if healneed >(500+healMod15)*dfMod and ManaLeft >= 410 and maxRankHS >=3 and SpellIDsHS[3] then SpellID = SpellIDsHS[3]; HealSize = (500+healMod15)*dfMod end
-    if healneed >(655+healMod15)*dfMod and ManaLeft >= 485 and maxRankHS >=4 and SpellIDsHS[4] then SpellID = SpellIDsHS[4]; HealSize = (655+healMod15)*dfMod end
-
-    return SpellID,HealSize*hdb;
+    return SpellID, HealSize * hdb;
 end
 
 
@@ -634,19 +614,22 @@ function QuickHeal_Command_Paladin(msg)
     writeLine("/qh tanklist | tl - Toggles display of the main tank list UI.");
     writeLine("/qh [mask] [type] [mod] - Heals the party/raid member that most needs it with the best suited healing spell.");
     writeLine(" [mask] constrains healing pool to:");
-    writeLine("  [player] yourself");
-    writeLine("  [target] your target");
-    writeLine("  [targettarget] your target's target");
-    writeLine("  [party] your party");
-    writeLine("  [mt] main tanks (defined in the configuration panel)");
-    writeLine("  [nonmt] everyone but the main tanks");
-    writeLine("  [subgroup] raid subgroups (defined in the configuration panel)");
+    writeLine("   [player] yourself");
+    writeLine("   [target] your target");
+    writeLine("   [targettarget] your target's target");
+    writeLine("   [party] your party");
+    writeLine("   [mt] main tanks (defined in the configuration panel)");
+    writeLine("   [nonmt] everyone but the main tanks");
+    writeLine("   [subgroup] raid subgroups (defined in the configuration panel)");
 
-    writeLine(" [mod] (optional) modifies [heal] options:");
-    writeLine("  [max] applies maximum rank HPS [heal] to subgroup members that have <100% health");
-    writeLine("  [hot] modifier options:");
-    writeLine("   [max] applies maximum HS rank to subgroup members that have <100% health");
-    writeLine("   [fh] applies maximum HS rank to subgroup members regardless of health status");
+    writeLine(" [type] specifies the use of a [heal] or [hot");
+    writeLine("   [heal] channeled heal");
+    writeLine("   [hot]  Holy Shock");
+    writeLine(" [mod] (optional) modifies [hot] or [heal] options:");
+    writeLine("   [heal] modifier options:");
+    writeLine("     [max] applies maximum rank [heal] to subgroup members that have <100% health");
+    writeLine("   [hot] modifier options:");
+    writeLine("     [max] applies maximum rank Holy Shock to subgroup members that have <100% health");
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
@@ -773,6 +756,7 @@ function GetLowestHealthUnit()
 
     return lowestUnit, lowestHealthPct; -- Return both unit and health percentage
 end
+
 
 
 
