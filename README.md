@@ -77,6 +77,9 @@ The following functions give paladins that choose to heal in melee additional to
 
 ## ChangeLog:
 
+**Oct 4, 2025**<Br>
+- Paladin : Allowing max rank usage of Holy Shock with "/qh hot max"
+- Paladin : Allowing max rank usage of Flash of Light or Holy Light (if active casting buff) with "/qh heal max"
 
 **Sep 21, 2025**<Br>
 - Misc : Nampower integration
@@ -117,6 +120,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
