@@ -61,10 +61,10 @@ Normal HPS encomapsses ALL healing spells regardless of relative cast time.
 `chainheal`: Forces the use of the Chain Heal spell.  Only works for Shamans.<Br>
 
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
-`max`: will apply a HoT to the next target that is not @100% hp and that does not currently have a HoT applied.<Br>
+`max`: force the use of the best HPS Heal or Hot on the next target that is not @100% hp (and that does not currently have a HoT applied if it's a Hot) <Br>
 `fh`: firehose mode.  Will apply maximum rank HoT on the next target that does not have a HoT applied.<Br>
 
-`/script QuickHeal(nil,'Spellname')`: this macro is similar to `/qh` without choosing the rank depending on heal need. For example, it can be useful for Regrowth if you want to max rank only, or Swiftmend also.<Br>
+`/script QuickHeal(nil,'Spellname')`: this macro is similar to `/qh` without choosing the rank depending on heal need. For example, it can be useful for Regrowth if you want to max rank only, or Swiftmend also. <Br>
 
 **QuickHeal Paladin Melee Healing**
 
@@ -117,6 +117,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
