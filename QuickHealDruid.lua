@@ -510,7 +510,7 @@ function QuickHeal_Druid_FindHoTSpellToUse(Target, healType, forceMaxRank)
 
         if not forceMaxRank then
             SpellID = SpellIDsRJ[1]; HealSize = (32+healMod15)*genMod*gonMod; -- Default to Renew(Rank 1)
-            if healneed > (56+gonMod+healMod15)*genMod*gonMod*k and ManaLeft >= 40*mgMod and maxRankRJ >=2 and SpellIDsRJ[2] then SpellID = SpellIDsRJ[2]; HealSize = (56+healMod15)*genMod*gonMod end
+            if healneed > (56+healMod15)*genMod*gonMod*k and ManaLeft >= 40*mgMod and maxRankRJ >=2 and SpellIDsRJ[2] then SpellID = SpellIDsRJ[2]; HealSize = (56+healMod15)*genMod*gonMod end
             if healneed > (116+healMod15)*genMod*gonMod*k and ManaLeft >= 75*mgMod and maxRankRJ >=3 and SpellIDsRJ[3] then SpellID = SpellIDsRJ[3]; HealSize = (116+healMod15)*genMod*gonMod end
             if healneed > (180+healMod15)*genMod*gonMod*k and ManaLeft >= 105*mgMod and maxRankRJ >=4 and SpellIDsRJ[4] then SpellID = SpellIDsRJ[4]; HealSize = (180+healMod15)*genMod*gonMod end
             if healneed > (244+healMod15)*genMod*gonMod*k and ManaLeft >= 135*mgMod and maxRankRJ >=5 and SpellIDsRJ[5] then SpellID = SpellIDsRJ[5]; HealSize = (244+healMod15)*genMod*gonMod end
@@ -816,6 +816,7 @@ function QuickHeal_Command_Druid(msg)
 
     writeLine("/qh reset - Reset configuration to default parameters for all classes.");
 end
+
 
 
 
