@@ -71,11 +71,11 @@ Normal HPS encomapsses ALL healing spells regardless of relative cast time.
 
 The following macros give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
 
-`/qh hs`: Classic Holy Shock function - dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
+`/qh hs`: Holy Shock macro dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
 
-`/run qhHShock(85)`: Specific Holy shock function - independant from quickheal rules (only use MAX rank on the lowest target around) - Number is the min % healing threshold to trigger (DEFAULT is set to 85%) - Doesn't cancel autoattack <Br>
+`/run qhHShock(85)`: Other Holy Shock macro independant from quickheal rules (only use MAX rank on the lowest target around) - Number is the min % healing threshold to trigger (DEFAULT is set to 85%) - Doesn't cancel autoattack <Br>
 
-`/run qhHStrike(93,3)`: Specific Holy Strike function - 1st number is the min %healing threshold to trigger - the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets) <Br>
+`/run qhHStrike(93,3)`: Specific Holy Strike macro - 1st number is the min %healing threshold to trigger - the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets) <Br>
 
 ## ChangeLog:
 
@@ -126,6 +126,7 @@ The following macros give paladins that choose to heal in melee additional tools
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
