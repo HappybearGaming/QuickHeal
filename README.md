@@ -72,7 +72,7 @@ The following macros give paladins that choose to heal in melee additional tools
 
 `/qh hot`: Classic Holy Shock function - dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
 
-`/run qhHShock(85)`: Specific Holy shock function - independant from quickheal rules - Number is the min % healing threshold to trigger (DEFAULT is set to 85%) - Doesn't cancel autoattack <Br>
+`/run qhHShock(85)`: Specific Holy shock function - independant from quickheal rules (only use MAX rank on the lowest target around) - Number is the min % healing threshold to trigger (DEFAULT is set to 85%) - Doesn't cancel autoattack <Br>
 
 `/run qhHStrike(93,3)`: Specific Holy Strike function - 1st number is the min %healing threshold to trigger - the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets) <Br>
 
@@ -121,6 +121,7 @@ The following macros give paladins that choose to heal in melee additional tools
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
