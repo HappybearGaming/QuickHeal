@@ -498,22 +498,20 @@ end
 function QuickHeal_Command_Paladin(msg)
 
     local _, _, arg1, arg2, arg3 = string.find(msg, "%s?(%w+)%s?(%w+)%s?(%w+)")
-
+    
     -- match 3 arguments
     if arg1 ~= nil and arg2 ~= nil and arg3 ~= nil then
         if arg1 == "player" or arg1 == "target" or arg1 == "targettarget" or arg1 == "party" or arg1 == "subgroup" or arg1 == "mt" or arg1 == "nonmt" then
             if arg2 == "heal" and arg3 == "max" then
-                --writeLine(QuickHealData.name .. " qh " .. arg1 .. " HEAL(maxHPS)", 0, 1, 0);
                 QuickHeal(arg1, nil, nil, true);
                 return;
             end
-            if arg2 == "hot" and arg3 == "fh" then
-                --writeLine(QuickHealData.name .. " qh " .. arg1 .. " HOT(max rank & no hp check)", 0, 1, 0);
+            -- 🔄 remplacement HOT -> HS
+            if arg2 == "hs" and arg3 == "fh" then
                 QuickHOT(arg1, nil, nil, true, true);
                 return;
             end
-            if arg2 == "hot" and arg3 == "max" then
-                --writeLine(QuickHealData.name .. " qh " .. arg1 .. " HOT(max rank)", 0, 1, 0);
+            if arg2 == "hs" and arg3 == "max" then
                 QuickHOT(arg1, nil, nil, true, false);
                 return;
             end
@@ -521,44 +519,38 @@ function QuickHeal_Command_Paladin(msg)
     end
 
     -- match 2 arguments
-    local _, _, arg4, arg5= string.find(msg, "%s?(%w+)%s?(%w+)")
+    local _, _, arg4, arg5 = string.find(msg, "%s?(%w+)%s?(%w+)")
 
     if arg4 ~= nil and arg5 ~= nil then
         if arg4 == "debug" then
             if arg5 == "on" then
                 QHV.DebugMode = true;
-                --writeLine(QuickHealData.name .. " debug mode enabled", 0, 0, 1);
                 return;
             elseif arg5 == "off" then
                 QHV.DebugMode = false;
-                --writeLine(QuickHealData.name .. " debug mode disabled", 0, 0, 1);
                 return;
             end
         end
         if arg4 == "heal" and arg5 == "max" then
-            --writeLine(QuickHealData.name .. " HEAL (max)", 0, 1, 0);
             QuickHeal(nil, nil, nil, true);
             return;
         end
-        if arg4 == "hot" and arg5 == "max" then
-            --writeLine(QuickHealData.name .. " HOT (max)", 0, 1, 0);
+        -- 🔄 remplacement HOT -> HS
+        if arg4 == "hs" and arg5 == "max" then
             QuickHOT(nil, nil, nil, true, false);
             return;
         end
-        if arg4 == "hot" and arg5 == "fh" then
-            --writeLine(QuickHealData.name .. " FH (max rank & no hp check)", 0, 1, 0);
+        if arg4 == "hs" and arg5 == "fh" then
             QuickHOT(nil, nil, nil, true, true);
             return;
         end
         if arg4 == "player" or arg4 == "target" or arg4 == "targettarget" or arg4 == "party" or arg4 == "subgroup" or arg4 == "mt" or arg4 == "nonmt" then
-            if arg5 == "hot" then
-                --writeLine(QuickHealData.name .. " qh " .. arg1 .. " HOT", 0, 1, 0);
-                QuickHOT(arg1, nil, nil, false, false);
+            if arg5 == "hs" then
+                QuickHOT(arg4, nil, nil, false, false);
                 return;
             end
             if arg5 == "heal" then
-                --writeLine(QuickHealData.name .. " qh " .. arg1 .. " HEAL", 0, 1, 0);
-                QuickHeal(arg1, nil, nil, false);
+                QuickHeal(arg4, nil, nil, false);
                 return;
             end
         end
@@ -578,7 +570,7 @@ function QuickHeal_Command_Paladin(msg)
     end
 
     if cmd == "downrank" or cmd == "dr" then
-        ToggleDownrankWindow()
+        ToggleDownrankWindow();
         return;
     end
 
@@ -596,55 +588,54 @@ function QuickHeal_Command_Paladin(msg)
     end
 
     if cmd == "heal" then
-        --writeLine(QuickHealData.name .. " HEAL", 0, 1, 0);
         QuickHeal();
         return;
     end
 
-    if cmd == "hot" then
-        --writeLine(QuickHealData.name .. " HOT", 0, 1, 0);
+    -- 🔄 remplacement HOT -> HS
+    if cmd == "hs" then
         QuickHOT();
         return;
     end
 
+    -- /qh hot ne fait plus rien
+    if cmd == "hot" then
+        writeLine("The command /qh hot is disabled for paladins. Use /qh hs instead.", 1, 0, 0);
+        return;
+    end
+
     if cmd == "" then
-        --writeLine(QuickHealData.name .. " qh", 0, 1, 0);
         QuickHeal(nil);
         return;
     elseif cmd == "player" or cmd == "target" or cmd == "targettarget" or cmd == "party" or cmd == "subgroup" or cmd == "mt" or cmd == "nonmt" then
-        --writeLine(QuickHealData.name .. " qh " .. cmd, 0, 1, 0);
         QuickHeal(cmd);
         return;
     end
 
-    -- Print usage information if arguments do not match
-    --writeLine(QuickHealData.name .. " Usage:");
+    -- Help
     writeLine("== QUICKHEAL USAGE : PALADIN ==");
     writeLine("/qh cfg - Opens up the configuration panel.");
-    writeLine("/qh toggle - Switches between High HPS and Normal HPS.  Heals (Healthy Threshold 0% or 100%).");
-    writeLine("/qh downrank | dr - Opens the slider to limit QuickHeal to constrain healing to lower ranks.");
-    writeLine("/qh tanklist | tl - Toggles display of the main tank list UI.");
-    writeLine("/qh [mask] [type] [mod] - Heals the party/raid member that most needs it with the best suited healing spell.");
+    writeLine("/qh toggle - Switches between High HPS and Normal HPS.");
+    writeLine("/qh downrank | dr - Opens the downrank limit slider.");
+    writeLine("/qh tanklist | tl - Toggles display of the main tank list.");
+    writeLine("/qh [mask] [type] [mod] - Heals the ally who needs it most.");
     writeLine(" [mask] constrains healing pool to:");
     writeLine("   [player] yourself");
     writeLine("   [target] your target");
     writeLine("   [targettarget] your target's target");
     writeLine("   [party] your party");
-    writeLine("   [mt] main tanks (defined in the configuration panel)");
+    writeLine("   [mt] main tanks");
     writeLine("   [nonmt] everyone but the main tanks");
-    writeLine("   [subgroup] raid subgroups (defined in the configuration panel)");
-
-    writeLine(" [type] specifies the use of a [heal] or [hot");
-    writeLine("   [heal] channeled heal");
-    writeLine("   [hot]  Holy Shock");
-    writeLine(" [mod] (optional) modifies [hot] or [heal] options:");
-    writeLine("   [heal] modifier options:");
-    writeLine("     [max] applies maximum rank [heal] to subgroup members that have <100% health");
-    writeLine("   [hot] modifier options:");
-    writeLine("     [max] applies maximum rank Holy Shock to subgroup members that have <100% health");
-
-    writeLine("/qh reset - Reset configuration to default parameters for all classes.");
+    writeLine("   [subgroup] your raid subgroup");
+    writeLine(" [type] specifies the use of:");
+    writeLine("   [heal] - direct heal");
+    writeLine("   [hs]   - Holy Shock");
+    writeLine(" [mod] optional:");
+    writeLine("   [max] - uses max rank");
+    writeLine("   [fh]  - uses max rank ignoring HP threshold");
+    writeLine("/qh reset - Reset configuration to default parameters.");
 end
+
 
  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -768,6 +759,7 @@ function GetLowestHealthUnit()
 
     return lowestUnit, lowestHealthPct; -- Return both unit and health percentage
 end
+
 
 
 
