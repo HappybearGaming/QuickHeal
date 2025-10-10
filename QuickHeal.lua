@@ -3153,16 +3153,6 @@ end
 -- If parameters are missing they will be determined automatically
 
 function QuickHOT(Target, SpellID, extParam, forceMaxRank, noHpCheck)
-    --if QuickHealBusy then
-        --if HealingTarget and MassiveOverhealInProgress then
-            --QuickHeal_debug("Massive overheal aborted.");
-            --SpellStopCasting();
-        --else
-            --QuickHeal_debug("Healing in progress, command ignored");
-        --end
-        --return;
-    --end
-
     QuickHealBusy = true;
     local AutoSelfCast = GetCVar("autoSelfCast");
     SetCVar("autoSelfCast", 0);
@@ -3188,11 +3178,13 @@ function QuickHOT(Target, SpellID, extParam, forceMaxRank, noHpCheck)
         end
     end
 
-    -- Sauvegarder si la cible actuelle est hostile, on utilisera TargetLastTarget pour revenir
+    -- ⚙️ Ne clear la target hostile que si le joueur est Paladin
     local hadHostileTarget = false;
-    if UnitExists('target') and not UnitIsFriend('player', 'target') then
-        hadHostileTarget = true;
-        ClearTarget();
+    if UnitClass("player") == "Paladin" then
+        if UnitExists('target') and not UnitIsFriend('player', 'target') then
+            hadHostileTarget = true;
+            ClearTarget();
+        end
     end
 
     if Target then
@@ -3273,7 +3265,6 @@ function QuickHOT(Target, SpellID, extParam, forceMaxRank, noHpCheck)
 
     if SpellID then
         ExecuteHOT(Target, SpellID);
-
         if hadHostileTarget then TargetLastTarget(); end
     else
         Message("You have no healing spells to cast", "Error", 2);
@@ -3298,5 +3289,6 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
 
 
