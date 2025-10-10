@@ -68,7 +68,7 @@ Normal HPS encomapsses ALL healing spells regardless of relative cast time.
 
 **QuickHeal Paladin Melee Healing**
 
-The following functions give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
+The following macros give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
 
 `/qh hot`: Classic Holy Shock function - dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
 
@@ -121,6 +121,7 @@ The following functions give paladins that choose to heal in melee additional to
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
