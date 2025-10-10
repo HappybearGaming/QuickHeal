@@ -57,7 +57,8 @@ Normal HPS encomapsses ALL healing spells regardless of relative cast time.
 
 `[type]`: constrains healing spell to:<Br>
 `heal`: Forces the use of your class' channeled heal spells.<Br>
-`hot`: Forces the use of your class' HoT spell over a channeled spell.  Only works for Priests & Druids & Paladins (for holy shock) .<Br>
+`hot`: Forces the use of your class' HoT spell over a channeled spell.  Only works for Priests & Druids <Br>
+`hs`: Forces the use of Holy Shock for paladins <Br>
 `chainheal`: Forces the use of the Chain Heal spell.  Only works for Shamans.<Br>
 
 `[mod]`: optional argument.  Modifies the application of HoTs:<Br>
@@ -70,13 +71,17 @@ Normal HPS encomapsses ALL healing spells regardless of relative cast time.
 
 The following macros give paladins that choose to heal in melee additional tools to automate Holy Strike and Holy Shock.
 
-`/qh hot`: Classic Holy Shock function - dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
+`/qh hs`: Classic Holy Shock function - dependant from quickheal rules (general threshold, priority, blacklist...) - Cancels autoattack <Br>
 
 `/run qhHShock(85)`: Specific Holy shock function - independant from quickheal rules (only use MAX rank on the lowest target around) - Number is the min % healing threshold to trigger (DEFAULT is set to 85%) - Doesn't cancel autoattack <Br>
 
 `/run qhHStrike(93,3)`: Specific Holy Strike function - 1st number is the min %healing threshold to trigger - the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets) <Br>
 
 ## ChangeLog:
+
+**Oct 10, 2025**<Br>
+- Paladin : replacing /qh hot by /qh hs for paladin only
+- Misc : /qh hot doesn't cancel auto attack anymore
 
 **Oct 4, 2025**<Br>
 - Paladin : Allowing max rank usage of Holy Shock with "/qh hot max"
@@ -121,6 +126,7 @@ The following macros give paladins that choose to heal in melee additional tools
 
 **Nov 11, 2024**<Br>
 - Paladin : Integration of R7 Flash of Light
+
 
 
 
