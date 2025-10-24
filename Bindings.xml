@@ -41,4 +41,7 @@
     <Binding name="QUICKHEAL_SHOWDOWNRANKWINDOW">
         if QUICKHEAL_LOADED then ToggleDownrankWindow() end
 	</Binding>
+    <Binding name="QUICKHEAL_TOGGLEDOWNRANK">
+        if QUICKHEAL_LOADED then QuickHeal_Toggle_Downrank() end
+	</Binding>
 </Bindings>

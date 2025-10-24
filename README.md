@@ -23,8 +23,17 @@ To invoke quickheal, make a macro with the `/qh` slash command
 
 **Downrank**
 
-To conserve mana and heal more efficiently you can limit the maximum rank that QuickHeal will use. It is done by moving the slider. on the Downrank Window.<Br>
-`/qh dr`: Open the Downrank Window
+To conserve mana and heal more efficiently you can limit the maximum rank that QuickHeal will use. It is done by moving the slider on the Downrank Window.<Br>
+
+`/qh dr`: Open the Downrank Window<Br>
+`/qh drtoggle` or `/qh drt`: Toggle between maximum and minimum downrank levels. This instantly switches both sliders between their lowest values (rank 1) and highest values (max rank for your class).<Br>
+
+You can also bind the downrank toggle to a key:
+1. Open Interface > Key Bindings
+2. Scroll to "QuickHeal" section
+3. Bind "QUICKHEAL_TOGGLEDOWNRANK" to your preferred key
+
+When toggled, the addon will display "Downrank: Max ranks enabled" or "Downrank: Lower ranks enabled" to show the current state.
 
 **High HPS vs Normal HPS**
 
@@ -78,6 +87,9 @@ The following macros give paladins that choose to heal in melee additional tools
 `/run qhHStrike(93,3)`: Specific Holy Strike macro - 1st number is the min %healing threshold to trigger - the 2nd number is the # of targets needed under threshold (DEFAULT set at 93% threshold on 3 targets) <Br>
 
 ## ChangeLog:
+
+**Oct 23, 2025**<Br>
+- All Classes : Added downrank toggle feature - `/qh drtoggle` or `/qh drt` command and keybinding to quickly switch between lowest and highest spell ranks
 
 **Oct 10, 2025**<Br>
 - Paladin : replacing /qh hot by /qh hs for paladin only

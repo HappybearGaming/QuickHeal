@@ -908,6 +908,11 @@ function QuickHeal_Command_Priest(msg)
         return;
     end
 
+    if cmd == "drtoggle" or cmd == "drt" then
+        QuickHeal_Toggle_Downrank()
+        return;
+    end
+
     if cmd == "tanklist" or cmd == "tl" then
         QH_ShowHideMTListUI();
         return;
@@ -949,6 +954,7 @@ function QuickHeal_Command_Priest(msg)
     writeLine("/qh cfg - Opens up the configuration panel.");
     writeLine("/qh toggle - Switches between High HPS and Normal HPS.  Heals (Healthy Threshold 0% or 100%).");
     writeLine("/qh downrank | dr - Opens the slider to limit QuickHeal to constrain healing to lower ranks.");
+    writeLine("/qh drtoggle | drt - Toggles between min and max downrank levels.");
     writeLine("/qh tanklist | tl - Toggles display of the main tank list UI.");
     writeLine("/qh [mask] [type] [mod] - Heals the party/raid member that most needs it with the best suited healing spell.");
     writeLine(" [mask] constrains healing pool to:");

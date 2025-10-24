@@ -1474,6 +1474,51 @@ function QuickHeal_Toggle_Healthy_Threshold()
     end
 end
 
+function QuickHeal_Toggle_Downrank()
+    -- Get current values from variables (not from sliders, so it works when window is closed)
+    local currentNH = QuickHealVariables["DownrankValueNH"] or 0
+    local currentFH = QuickHealVariables["DownrankValueFH"] or 0
+
+    -- Get min/max from sliders (always available, even when window is closed)
+    local minNH, maxNH = QuickHealDownrank_Slider_NH:GetMinMaxValues()
+    local minFH, maxFH = QuickHealDownrank_Slider_FH:GetMinMaxValues()
+
+    -- Toggle NH value in QuickHealVariables (always update the variable)
+    if currentNH >= maxNH then
+        QuickHealVariables["DownrankValueNH"] = minNH
+    else
+        QuickHealVariables["DownrankValueNH"] = maxNH
+    end
+
+    -- Toggle FH value in QuickHealVariables (always update the variable)
+    if currentFH >= maxFH then
+        QuickHealVariables["DownrankValueFH"] = minFH
+    else
+        QuickHealVariables["DownrankValueFH"] = maxFH
+    end
+
+    -- Sync sliders with new values (only if visible, to keep UI in sync)
+    if QuickHealDownrank_Slider_NH:IsVisible() then
+        QuickHealDownrank_Slider_NH:SetValue(QuickHealVariables["DownrankValueNH"])
+    end
+
+    if QuickHealDownrank_Slider_FH:IsVisible() then
+        QuickHealDownrank_Slider_FH:SetValue(QuickHealVariables["DownrankValueFH"])
+    end
+
+    -- Provide visual feedback based on new state
+    local nhVal = QuickHealVariables["DownrankValueNH"]
+    local fhVal = QuickHealVariables["DownrankValueFH"]
+
+    -- Check if we're at max ranks (considering NH might be hidden for some classes like Paladin)
+    local nhAtMax = not QuickHealDownrank_Slider_NH:IsVisible() or nhVal >= maxNH
+    if nhAtMax and fhVal >= maxFH then
+        writeLine("Downrank: Max ranks enabled", 0.9, 0.44, 0.05)
+    else
+        writeLine("Downrank: Lower ranks enabled", 0.05, 0.7, 0.7)
+    end
+end
+
 
 --[ Buff and Debuff detection ]--
 
