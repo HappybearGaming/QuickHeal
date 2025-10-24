@@ -579,6 +579,11 @@ function QuickHeal_Command_Paladin(msg)
         return;
     end
 
+    if cmd == "targetpriority" or cmd == "tp" then
+        QuickHeal_Toggle_Target_Priority()
+        return;
+    end
+
     if cmd == "tanklist" or cmd == "tl" then
         QH_ShowHideMTListUI();
         return;
@@ -623,6 +628,7 @@ function QuickHeal_Command_Paladin(msg)
     writeLine("/qh toggle - Switches between High HPS and Normal HPS.");
     writeLine("/qh downrank | dr - Opens the downrank limit slider.");
     writeLine("/qh drtoggle | drt - Toggles between min and max downrank levels.");
+    writeLine("/qh targetpriority | tp - Toggles target priority (heals your target first).");
     writeLine("/qh tanklist | tl - Toggles display of the main tank list.");
     writeLine("/qh [mask] [type] [mod] - Heals the ally who needs it most.");
     writeLine(" [mask] constrains healing pool to:");

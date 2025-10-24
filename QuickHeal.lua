@@ -1519,6 +1519,17 @@ function QuickHeal_Toggle_Downrank()
     end
 end
 
+function QuickHeal_Toggle_Target_Priority()
+    -- Toggle the TargetPriority variable
+    if QuickHealVariables.TargetPriority then
+        QuickHealVariables.TargetPriority = false
+        writeLine("Target Priority: Disabled", 0.05, 0.7, 0.7)
+    else
+        QuickHealVariables.TargetPriority = true
+        writeLine("Target Priority: Enabled", 0.9, 0.44, 0.05)
+    end
+end
+
 
 --[ Buff and Debuff detection ]--
 

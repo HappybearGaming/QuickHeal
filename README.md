@@ -45,6 +45,17 @@ High HPS is restricted to fast-casting heal spells.
 Normal HPS encomapsses ALL healing spells regardless of relative cast time.
     Normal healing throughput with higher mana efficiency.
 
+**Target Priority**
+
+`/qh targetpriority` or `/qh tp`: Toggles target priority mode. When enabled, QuickHeal will prioritize healing your current target over other party/raid members (if your target needs healing).<Br>
+
+You can also bind the target priority toggle to a key:
+1. Open Interface > Key Bindings
+2. Scroll to "QuickHeal" section
+3. Bind "QUICKHEAL_TOGGLETARGETPRIORITY" to your preferred key
+
+When toggled, the addon will display "Target Priority: Enabled" or "Target Priority: Disabled" to show the current state.
+
 **Tank list and mt healing**
 
 `/qh tanklist`: Toggles tanklist display.
@@ -90,6 +101,7 @@ The following macros give paladins that choose to heal in melee additional tools
 
 **Oct 23, 2025**<Br>
 - All Classes : Added downrank toggle feature - `/qh drtoggle` or `/qh drt` command and keybinding to quickly switch between lowest and highest spell ranks
+- All Classes : Added target priority toggle feature - `/qh targetpriority` or `/qh tp` command and keybinding to prioritize healing your current target
 
 **Oct 10, 2025**<Br>
 - Paladin : replacing /qh hot by /qh hs for paladin only

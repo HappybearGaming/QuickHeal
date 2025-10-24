@@ -44,4 +44,7 @@
     <Binding name="QUICKHEAL_TOGGLEDOWNRANK">
         if QUICKHEAL_LOADED then QuickHeal_Toggle_Downrank() end
 	</Binding>
+    <Binding name="QUICKHEAL_TOGGLETARGETPRIORITY">
+        if QUICKHEAL_LOADED then QuickHeal_Toggle_Target_Priority() end
+	</Binding>
 </Bindings>
